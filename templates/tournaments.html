@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h2 class="link-h2">Torneos</h2>
+    <div class="table-wrapper">
+        <table class="fl-table">
+            <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Participantes</th>
+                <th>Comunidad</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for tor in tors %}
+                <tr onclick="window.open('{{ tor.bcpUri }}', '_blank');">
+                    <td>{{ tor.name | truncate(30, True, '...', 0) }}</td>
+                    <td>{{ tor.date }}</td>
+                    {% if tor.isTeam %}
+                        <td>Equipos</td>
+                    {% else %}
+                        <td>Individual</td>
+                    {% endif %}
+                    <td>{{ tor.users|length }}</td>
+                    <td>{{ tor.city }}</td>
+                </tr>
+            {% endfor %}
+            <tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h2 class="link-h2">Ranking Individual</h2>
+    <div class="table-wrapper">
+        <table class="fl-table">
+            <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Posición</th>
+                <th>Puntuación</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for us in users %}
+                <tr onclick="location.href='/user/{{ us.id }}';">
+                    <td style="width: 60%;">{{ us.bcpName | truncate(30, True, '...', 0) }}</td>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ '%0.2f'| format(us.ibericonScore) }}</td>
+                </tr>
+            {% endfor %}
+            <tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="login">
+        <h2>Acceso</h2>
+        <form class="login-form" action="/login/only-collaborator" method="post">
+            <input placeholder="Email BCP" type="text" name="mail" id="mail">
+            <input placeholder="Contraseña" type="password" name="password" id="password">
+            <button type="submit">Entrar</button>
+        </form>
+    </div>
+{% endblock %}

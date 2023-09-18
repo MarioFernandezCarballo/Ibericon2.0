@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h2 class="link-h2">{{ team.name }}</h2>
+    <h4>Puntuación Ibericon: {{ '%0.2f'| format(team.ibericonScore) }}</h4>
+    {% for tor in team.tournaments %}
+    <h3 class="link-h2" onclick="window.open('{{ tor.bcpUri }}', '_blank');">{{ tor.name }}</h3>
+    <div class="table-wrapper">
+        <table class="fl-table">
+            <thead>
+            <tr>
+                <th>Jugador</th>
+                <th>Posición</th>
+                <th>Puntuación</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for teamTor in teTor %}
+                    {% if tor.id == teamTor.UserTournament.tournamentId %}
+                        {% for usr in team.users %}
+                            {% if usr.id == teamTor.UserTournament.userId %}
+                                <tr onclick="location.href='/user/{{ teamTor.UserTournament.userId }}';">
+                                    <td style="width: 70%;">{{ usr.bcpName | truncate(30, True, '...', 0) }}</td>
+                                    <td style="width: 20%;">{{ teamTor.UserTournament.teamPosition }}</td>
+                                    <td>{{ '%0.2f'| format(teamTor.UserTournament.ibericonTeamScore) }}</td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            <tbody>
+        </table>
+    </div>
+    {% endfor %}
+{% endblock %}

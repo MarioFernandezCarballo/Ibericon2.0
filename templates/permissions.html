@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="login">
+        <h2>Permisos</h2>
+        <form class="login-form" action="/user/{{ usr.id }}/permission" method="post">
+            <select id="permission" name="permission">
+                {% for perm in permissions %}
+                    {% if perm <= usr.permissions %}
+                        <option value="{{ perm }}" selected>{{ perm }}</option>
+                    {% else %}
+                        <option value="{{ perm }}">{{ perm }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <button type="submit">Cambiar</button>
+        </form>
+    </div>
+{% endblock %}

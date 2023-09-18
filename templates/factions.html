@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+    {% for fct in factions %}
+    <div class="table-wrapper">
+        <h2 class="link-h2" onclick="location.href='/faction/{{ fct.id }}';">{{ fct.name }}</h2>
+        <table class="fl-table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Puntuación</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% set count = namespace(value=0) %}
+            {% for usFc in usrFct %}
+                {% if usFc.UserFaction.factionId == fct.id and count.value < 3 %}
+                    {% set count.value = count.value + 1 %}
+                    <tr onclick="location.href='/user/{{ usFc.UserFaction.userId }}';">
+                        <td style="width: 70%;">{{ usFc.User.bcpName | truncate(30, True, '...', 0) }}</td>
+                        <td>{{ '%0.2f'| format(usFc.UserFaction.ibericonScore) }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            <tbody>
+        </table>
+    </div>
+    {% endfor %}
+{% endblock %}
