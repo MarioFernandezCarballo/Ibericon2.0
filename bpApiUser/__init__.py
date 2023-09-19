@@ -2,7 +2,7 @@ from flask import jsonify
 from flask_openapi3 import APIBlueprint
 from flask_login import login_required
 
-from database import Region
+from database import Conference
 
 from .queries import Queries
 from .responses import Responses
@@ -18,16 +18,15 @@ userApiBP = APIBlueprint('userApiBluePrint', __name__, url_prefix='/api/user')
                     200: Responses.Ranking,
                 })
 def userRankingApiEndPoint(query: Queries.Ranking):
-    usr = getUsers(query.region)  # TODO hacer aquí el join de region y otras cosas
+    usr = getUsers(query.conference)  # TODO hacer aquí el join de region y otras cosas
     users = []
     for u in usr:
-        region = Region.query.filter_by(id=u.region).first()
+        conference = Conference.query.filter_by(id=u.conference).first()
         users.append({
             'id': u.bcpId,
             'name': u.bcpName,
-            'region': region.name,
+            'conference': conference.name,
             'scoreGlobal': u.ibericonScore,
-            'scoreRegion': u.ibericonScore  # TODO
         })
     return jsonify({
         "status": 200,
@@ -45,16 +44,15 @@ def userRankingApiEndPoint(query: Queries.Ranking):
 def userDetailApiEndPoint(query: Queries.Detail):
     user = getUserOnly(query.bcpId)
     usr = getUser(query.bcpId)
-    region = Region.query.filter_by(id=user.region).first()
+    conference = Conference.query.filter_by(id=user.conference).first()
     return jsonify({
         "status": 200,
         "message": "Successful",
         "data": {
             'id': user.bcpId,
             'name': user.bcpName,
-            'region': region.name,
+            'conference': conference.name,
             'scoreGlobal': user.ibericonScore,
-            'scoreRegion': user.ibericonScore  # TODO
         }
     })
 
@@ -69,14 +67,14 @@ def userDetailApiEndPoint(query: Queries.Detail):
 def userProfileApiEndPoint(query: Queries.Detail):
     user = getUserOnly(query.bcpId)
     usr = getUser(query.bcpId)
-    region = Region.query.filter_by(id=user.region).first()
+    conference = Conference.query.filter_by(id=user.conference).first()
     return jsonify({
         "status": 200,
         "message": "Successful",
         "data": {
             'id': user.bcpId,
             'name': user.bcpName,
-            'region': region.name,
+            'conference': conference.name,
             'scoreGlobal': user.ibericonScore,
         }
     })

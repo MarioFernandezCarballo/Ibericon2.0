@@ -4,7 +4,7 @@ from typing import Optional
 
 class Queries:
     class List(BaseModel):
-        region: Optional[str] = Field(None, description="Tournament region")
+        conference: Optional[str] = Field(None, description="Tournament conference")
 
     class Detail(BaseModel):
         id: str = Field(None, description="Tournament BCP Id")

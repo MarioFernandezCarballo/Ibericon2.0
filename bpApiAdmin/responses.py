@@ -24,7 +24,7 @@ class Users:
     class User(BaseModel):
         id: str = Field(None, description="BCP Id")
         name: str = Field(None, description="BCP Name")
-        region: str = Field(None, description="Your Ibericon Region")
+        conference: str = Field(None, description="Your Ibericon conference")
         score: float = Field(None, description="Tournament Score")
         profilePic: str = Field(None, description="Profile pic (Base64 str)")
         faction: Factions.Faction = Field(None, description="Faction Information")
@@ -42,7 +42,7 @@ class Models:
         name: str = Field(None, description="BCP Name")
         uri: str = Field(None, description="BCP Uri")
         city: str = Field(None, description="City")
-        region: str = Field(None, description="Region (Conference)")
+        conference: str = Field(None, description="Conference")
         date: str = Field(None, description="Date of the tournament")
         isTeam: bool = Field(None, description="Is team tournament?")
         rounds: int = Field(None, description="Tournament rounds")

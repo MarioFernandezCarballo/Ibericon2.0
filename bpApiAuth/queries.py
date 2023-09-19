@@ -6,7 +6,7 @@ class Queries:
     class SignUp(BaseModel):
         mail: str = Field(None, description="BCP Mail")
         password: str = Field(None, description="BCP Password")
-        region: str = Field(None, description="Your Ibericon Region")
+        conference: str = Field(None, description="Your Ibericon conference")
 
     # Define a Pydantic BaseModel for login requests
     class Login(BaseModel):

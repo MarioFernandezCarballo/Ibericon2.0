@@ -4,7 +4,7 @@ import os
 
 from werkzeug.security import generate_password_hash
 
-from database import db, User, Region
+from database import db, User, Conference, City
 from bpApiAuth import loginManager, jwt
 from bpApiAdmin import limiter
 
@@ -30,6 +30,7 @@ def createApp(app):
     app.config["BCP_API_HEADERS"] = config['api-headers']
 
     app.config["CITIES"] = config["cities"]
+    app.config["CONFERENCES"] = config["conferences"]
 
     app.config["ADMIN_USERNAME"] = config['admin-name']
     app.config["ADMIN_PASSWORD"] = config['admin-password']
@@ -105,7 +106,11 @@ def createCollaborator(app):
 
 
 def createRegions(app):
-    for key, value in app.config['CITIES'].items():
-        new_region = Region(name=value)
-        app.config['database'].session.add(new_region)
+    for key, value in app.config['CONFERENCES'].items():
+        new_conference = Conference(name=key)
+        app.config['database'].session.add(new_conference)
+        for key1, value1 in app.config['CITIES'].items():
+            if value1 in value:
+                new_region = City(name=value1, code=int(key1), conference=new_conference)
+                app.config['database'].session.add(new_region)
         app.config['database'].session.commit()

@@ -14,7 +14,7 @@ def getFactions(query):
             "users": [{
                 "id": user.bcpId,
                 "name": user.bcpName,
-                "region": user.region,
+                "conference": user.conference,
                 "score": score,
                 "profilePic": user.profilePic,
                 "isClassified": user.isClassified,
@@ -34,8 +34,8 @@ def getFaction(query):
             "name": faction.name,
             "users": [{
                 "id": user.bcpId,
-                "name": user.bcpName,
-                "region": user.region,
+                "name": user.name,
+                "conference": user.conference,
                 "score": score,
                 "profilePic": user.profilePic,
                 "isClassified": user.isClassified,
@@ -45,7 +45,7 @@ def getFaction(query):
             "tournaments": [{
                 "id": tour.bcpId,
                 "name": tour.name,
-                "region": tour.region,
+                "conference": tour.conference,
                 "date": tour.date
             } for tour in faction.tournaments],
         }

@@ -12,7 +12,7 @@ from flask_login import login_user, logout_user
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from database import User, Region
+from database import User, Conference
 
 
 # Function to register a user
@@ -23,14 +23,14 @@ def userSignup(database, form):
         # Hash the user's password
         hashed_password = generate_password_hash(form.password, method='scrypt')
         user = User.query.filter_by(bcpId=data['id']).first()
-        region = Region.query.filter_by(name=form.region).first()
+        conference = Conference.query.filter_by(name=form.conference).first()
         if user:
             if not user.registered:
                 # Update user data if the user already exists but is not registered
                 user.bcpMail = data['email']
                 user.password = hashed_password
                 user.registered = True
-                user.region = region.id
+                user.conference = conference.id
                 database.session.commit()
                 # Create a response with user information and set cookies
                 response = jsonify({
@@ -40,7 +40,7 @@ def userSignup(database, form):
                         "id": user.bcpId,
                         "name": user.bcpName,
                         "mail": user.bcpMail,
-                        "region": user.region
+                        "conference": user.conference
                     }
                 })
                 return setUserInfo(response, user)
@@ -56,7 +56,7 @@ def userSignup(database, form):
             password=hashed_password,
             bcpName=data['firstName'] + " " + data['lastName'],
             permissions=0,
-            region=region.id,
+            conference=conference.id,
             registered=True
         )
         database.session.add(new_user)
@@ -69,7 +69,7 @@ def userSignup(database, form):
                 "id": new_user.bcpId,
                 "name": new_user.bcpName,
                 "mail": new_user.bcpMail,
-                "region": new_user.region
+                "conference": new_user.conference
             }
         })
         return setUserInfo(response, new_user)
@@ -111,7 +111,7 @@ def userLogin(form):
                     "id": user.bcpId,
                     "name": user.bcpName,
                     "mail": user.bcpMail,
-                    "region": user.region
+                    "conference": user.conference
                 }
             })
             return setUserInfo(response, user)

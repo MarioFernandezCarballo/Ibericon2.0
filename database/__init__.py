@@ -17,7 +17,8 @@ class User(db.Model, UserMixin):
     ibericonScore = db.Column(db.Float, default=0.0)
     isClassified = db.Column(db.Boolean)
     profilePic = db.Column(db.LargeBinary)  # TODO b64encode(user.profilePic)
-    region = db.Column(db.Integer, db.ForeignKey('region.id'))
+    conference = db.Column(db.Integer, db.ForeignKey('conference.id'))
+    city = db.Column(db.Integer, db.ForeignKey('city.id'))
     factions = db.relationship('Faction', secondary="userfaction", cascade='all,delete', back_populates='users')
     teams = db.relationship('Team', secondary="userteam", cascade='all,delete', back_populates='users')
     clubs = db.relationship('Club', secondary="userclub", cascade='all,delete', back_populates='users')
@@ -29,7 +30,7 @@ class Team(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     bcpId = db.Column(db.String(30), nullable=False)
     name = db.Column(db.String(50), nullable=False)
-    region = db.Column(db.Integer, db.ForeignKey('region.id'))
+    conference = db.Column(db.Integer, db.ForeignKey('conference.id'))
     shortName = db.Column(db.String(50))
     ibericonScore = db.Column(db.Float, default=0.0)
     users = db.relationship('User', secondary="userteam", back_populates='teams')
@@ -41,7 +42,7 @@ class Club(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     bcpId = db.Column(db.String(30), nullable=False)
     name = db.Column(db.String(50), nullable=False)
-    region = db.Column(db.Integer, db.ForeignKey('region.id'))
+    conference = db.Column(db.Integer, db.ForeignKey('conference.id'))
     shortName = db.Column(db.String(50))
     ibericonScore = db.Column(db.Float, default=0.0)
     users = db.relationship('User', secondary="userclub", back_populates='clubs')
@@ -65,8 +66,8 @@ class Tournament(db.Model):
     bcpUri = db.Column(db.String(100), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     shortName = db.Column(db.String(50))
-    city = db.Column(db.String(50))
-    region = db.Column(db.Integer, db.ForeignKey('region.id'))
+    city = db.Column(db.Integer, db.ForeignKey('city.id'))
+    conference = db.Column(db.Integer, db.ForeignKey('conference.id'))
     date = db.Column(db.String(50))
     isFinished = db.Column(db.Boolean)
     isTeam = db.Column(db.Boolean)
@@ -105,7 +106,6 @@ class UserFaction(db.Model):
     winRate = db.Column(db.Float, default=0.0)  # TODO
 
 
-# TODO redefinir puntuaciones de equipo y club
 class UserTeam(db.Model):
     __tablename__ = 'userteam'
     id = db.Column(db.Integer, primary_key=True)
@@ -122,10 +122,20 @@ class UserClub(db.Model):
     ibericonScore = db.Column(db.Float, default=0.0)
 
 
-class Region(db.Model):
-    __tablename__ = 'region'
+class Conference(db.Model):
+    __tablename__ = 'conference'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Integer, db.ForeignKey('user.id'))
+    name = db.Column(db.String(50))
+    cities = db.relationship('City', back_populates='conference')
+
+
+class City(db.Model):
+    __tablename__ = 'city'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+    code = db.Column(db.Integer)
+    conference_id = db.Column(db.Integer, db.ForeignKey('conference.id'))
+    conference = db.relationship('Conference', back_populates='cities')
 
 
 # ------- Rates ------- #

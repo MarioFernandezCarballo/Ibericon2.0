@@ -6,7 +6,7 @@ from sqlalchemy import desc
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from database import User, UserFaction, UserTournament, Tournament, Region
+from database import User, UserFaction, UserTournament, Tournament, Conference
 
 
 def userSignup(database, form):

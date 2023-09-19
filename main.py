@@ -53,4 +53,4 @@ if __name__ == '__main__':
 
 # TODO añadir region por defecto del torneo si el usuario no está registrado
 # TODO que pasa si alguien se cambia el mail de bcp? no se puede logar con el viejo pero guarda el bcpid...
-# TODO montar los json de respuesta en las funciones de utiles
+# TODO hacer un repaso sobre la información que envío en cada endpoint

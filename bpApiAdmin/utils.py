@@ -8,7 +8,7 @@ from flask_login import login_user, logout_user
 from sqlalchemy import desc
 from sqlalchemy.orm import joinedload
 
-from database import User, Region, Tournament, UserTournament, Faction, Team, Club, UserFaction, UserClub
+from database import User, Conference, Tournament, UserTournament, Faction, Team, Club, UserFaction, UserClub, City
 
 
 def setPlayerPermission(database, userId, level):
@@ -70,14 +70,14 @@ def addNewTournament(db, form):
                     "name": tor.name,
                     "uri": tor.bcpUri,
                     "city": tor.city,
-                    # "region": Region.query.filter_by(id=tor.city).first().name,  # TODO
+                    "conference": Conference.query.filter_by(id=tor.conference).first().name,
                     "date": tor.date,
                     "isTeam": tor.isTeam,
                     "rounds": tor.rounds,
                     "users": [{
                         "id": user.bcpId,
                         "name": user.bcpName,
-                        # "region": Region.query.filter_by(id=user.region).first().name,  # TODO
+                        "conference": Conference.query.filter_by(id=user.conference).first().name,
                         "score": userTournament.ibericonScore,
                         "profilePic": user.profilePic,
                         "faction": {
@@ -110,13 +110,14 @@ def addNewTournament(db, form):
 
 def manageTournament(db, info):
     isTeamTournament = info['teamEvent']
-    location = current_app.config["CITIES"][info['zip'][0:2]]
+    city = City.query.filter_by(name=current_app.config["CITIES"][info['zip'][0:2]]).first()
     db.session.add(Tournament(
         bcpId=info['id'],
         bcpUri="https://www.bestcoastpairings.com/event/" + info['id'],
         name=info['name'].strip(),
         shortName=info['name'].replace(" ", "").lower(),
-        city=location,
+        city=city.id,
+        conference=city.conference_id,
         isTeam=isTeamTournament,
         date=info['eventDate'].split("T")[0],
         totalPlayers=info['totalPlayers'] - info['droppedPlayers'],
@@ -133,7 +134,7 @@ def manageUsers(db, tor):
     for user in info['data']:
         usr = addUserFromTournament(db, user, tor)
         fct = addFactionFromTournament(db, user)
-        cl = addClubFromTournament(db, user)
+        cl = addClubFromTournament(db, user, tor)
         tor.users.append(usr)
         usrTor = UserTournament.query.filter_by(userId=usr.id).filter_by(tournamentId=tor.id).first()
         usrTor.position = user['placing']
@@ -172,7 +173,7 @@ def manageTeams(db, tor):  # TODO test this all
         for us in uss:
             usr = addUserFromTournament(db, us, tor)
             fct = addFactionFromTournament(db, us)
-            cl = addClubFromTournament(db, us)
+            cl = addClubFromTournament(db, us, tor)
 
             tor.users.append(usr)
             tm.users.append(usr)
@@ -218,11 +219,10 @@ def manageTeams(db, tor):  # TODO test this all
 
 def addUserFromTournament(db, usr, tor):
     if not User.query.filter_by(bcpId=usr['userId']).first():
-        region = Region.query.filter_by(name=tor.city).first()  # TODO cambiar a region cuando funcione
         db.session.add(User(
             bcpId=usr['userId'],
             bcpName=usr['user']['firstName'].strip() + " " + usr['user']['lastName'].strip(),
-            region=region.id if region else None,  # TODO test
+            conference=tor.conference,
             permissions=0,
             registered=False
         ))
@@ -242,24 +242,26 @@ def addFactionFromTournament(db, fct):
     return Faction.query.filter_by(bcpId=fct['armyId']).first() if fct['army'] else None
 
 
-def addClubFromTournament(db, te):
+def addClubFromTournament(db, te, tor):
     if te['team']:
         if not Club.query.filter_by(bcpId=te['teamId']).first():
             db.session.add(Club(
                 bcpId=te['teamId'],
                 name=te['team']['name'].strip(),
+                conference=tor.conference,
                 shortName=te['team']['name'].replace(" ", "").lower()
             ))
     db.session.commit()
     return Club.query.filter_by(bcpId=te['teamId']).first() if te['team'] else None
 
 
-def addTeamFromTournament(db, te):
+def addTeamFromTournament(db, te, tor):
     teId = te['name'].replace(" ", "-").lower()
     if not Team.query.filter_by(bcpId=teId).first():
         db.session.add(Team(
             bcpId=teId,
             name=te['name'].strip(),
+            conference=tor.conference,
             shortName=te['name'].replace(" ", "").lower()
         ))
     db.session.commit()

@@ -4,7 +4,7 @@ from sqlalchemy import desc
 from database import User, UserTournament, Tournament
 
 
-def getUsers(region, qty=0):  # TODO region thingy
+def getUsers(conference, qty=0):
     if qty > 0:
         result = User.query.filter(User.bcpId != "0000000000").order_by(desc(User.ibericonScore)).all()
         return result[0:qty-1]

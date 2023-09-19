@@ -4,7 +4,7 @@ from typing import Optional
 
 class Queries:
     class Ranking(BaseModel):
-        region: str = Field([], description="Ragion of Ibericon")
+        conference: str = Field([], description="Conference of Ibericon")
 
     class Detail(BaseModel):
         bcpId: str = Field(None, description="BCP Id")

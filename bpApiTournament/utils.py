@@ -1,19 +1,12 @@
-import requests
-import json
-from datetime import timedelta
-
 from flask import current_app, jsonify
-from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies
-from flask_login import login_user, logout_user
 from sqlalchemy import desc
-from sqlalchemy.orm import joinedload
 
-from database import User, Region, Tournament, UserTournament, Faction, Team, Club, UserFaction, UserClub
+from database import Tournament, UserTournament
 
 
 def getTournaments(query):
-    result = Tournament.query.filter_by(region=query.region)  # TODO
-    result = result.order_by(desc(Tournament.date)).all() if query.region else result.all()
+    result = Tournament.query.filter_by(conference=query.conference)
+    result = result.order_by(desc(Tournament.date)).all() if query.conference else result.all()
     return jsonify({
         "status": 200,
         "message": "Ok",
@@ -22,7 +15,7 @@ def getTournaments(query):
             "uri": tor.bcpUri,
             "name": tor.name,
             "city": tor.city,
-            "region": tor.region,  # TODO
+            "conference": tor.conference,
             "date": tor.date,
             "finished": tor.isFinished,
             "isTeam": tor.isTeam,

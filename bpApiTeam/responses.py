@@ -16,7 +16,7 @@ class Tournament:
     class Tournament(BaseModel):
         id: str = Field(None, description="BCP Id")
         name: str = Field(None, description="BCP Name")
-        region: int = Field(None, description="Your Ibericon Region Id")
+        conference: int = Field(None, description="Your Ibericon conference Id")
         date: int = Field(None, description="Ibericon global Score")
 
 
@@ -24,7 +24,7 @@ class Models:
     class TeamRanking(BaseModel):
         id: str = Field(None, description="BCP Id")
         name: str = Field(None, description="BCP Name")
-        region: int = Field(None, description="Ibericon Region Id")
+        conference: int = Field(None, description="Ibericon conference Id")
         score: int = Field(None, description="Ibericon global Score")
 
     class TeamDetail(TeamRanking):

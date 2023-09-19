@@ -74,11 +74,18 @@ def deleteTournamentApiEndPoint(query: Queries.DeleteTournament):
                  },
                  doc_ui=False)  # TODO cambiar esto en github que apunte a donde tiene que hacerlo
 def webhookApi():
-    os.system('bash command-pull-event.sh')  # TODO limitar esto a una vez por hora
-    return jsonify({
-        "status": 200,
-        "message": "Ok"
-    })
+    try:
+        with limiter.limit("1/hour"):
+            os.system('bash command-pull-event.sh')
+            return jsonify({
+                "status": 200,
+                "message": "Ok"
+            })
+    except RateLimitExceeded:
+        return jsonify({
+            "status": 400,
+            "message": "Limit of this endpoint exceeded"
+        })
 
 
 @adminApiBP.patch('/update/algorithm',
