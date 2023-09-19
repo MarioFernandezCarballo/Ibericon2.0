@@ -51,6 +51,5 @@ if __name__ == '__main__':
     app.run(host=app.config['HOST'], port=app.config['PORT'])
 
 
-# TODO añadir region por defecto del torneo si el usuario no está registrado
 # TODO que pasa si alguien se cambia el mail de bcp? no se puede logar con el viejo pero guarda el bcpid...
-# TODO hacer un repaso sobre la información que envío en cada endpoint
+# TODO gestionar el posible cambio de ciudad/conferencia de los jugadores con un many to many

@@ -1,5 +1,7 @@
 from flask import current_app, jsonify
 
+from sqlalchemy import desc
+
 from database import Faction, UserFaction, User
 
 
@@ -18,7 +20,11 @@ def getFactions(query):
                 "score": score,
                 "profilePic": user.profilePic,
                 "isClassified": user.isClassified,
-            } for user, score in current_app.config['database'].session.query(User, UserFaction.ibericonScore).join(UserFaction, User.id == UserFaction.userId).filter(UserFaction.factionId == faction.id).all()]
+            } for user, score in (current_app.config['database'].session.query(User, UserFaction.ibericonScore)
+                                  .join(UserFaction, User.id == UserFaction.userId)
+                                  .filter(UserFaction.factionId == faction.id)
+                                  .order_by(desc(UserFaction.ibericonScore))
+                                  .all())]
         } for faction in factions]
     })
     return result
@@ -34,14 +40,16 @@ def getFaction(query):
             "name": faction.name,
             "users": [{
                 "id": user.bcpId,
-                "name": user.name,
+                "name": user.bcpName,
                 "conference": user.conference,
                 "score": score,
                 "profilePic": user.profilePic,
                 "isClassified": user.isClassified,
-            } for user, score in
-                current_app.config['database'].session.query(User, UserFaction.ibericonScore).join(UserFaction, User.id == UserFaction.userId).filter(
-                    UserFaction.factionId == faction.id).all()],
+            } for user, score in (current_app.config['database'].session.query(User, UserFaction.ibericonScore)
+                                  .join(UserFaction, User.id == UserFaction.userId)
+                                  .filter(UserFaction.factionId == faction.id)
+                                  .order_by(desc(UserFaction.ibericonScore))
+                                  .all())],
             "tournaments": [{
                 "id": tour.bcpId,
                 "name": tour.name,

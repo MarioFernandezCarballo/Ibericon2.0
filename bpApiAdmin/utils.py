@@ -1,12 +1,8 @@
 import requests
 import json
-from datetime import timedelta
 
 from flask import current_app, jsonify
-from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies
-from flask_login import login_user, logout_user
 from sqlalchemy import desc
-from sqlalchemy.orm import joinedload
 
 from database import User, Conference, Tournament, UserTournament, Faction, Team, Club, UserFaction, UserClub, City
 
@@ -14,6 +10,7 @@ from database import User, Conference, Tournament, UserTournament, Faction, Team
 def setPlayerPermission(database, userId, level):
     lvl = level
     usr = User.query.filter_by(bcpId=userId).first()
+    oldPermission = usr.permissions
     usr.permissions = int(lvl)
     database.session.commit()
     return jsonify({
@@ -23,6 +20,7 @@ def setPlayerPermission(database, userId, level):
             "id": usr.bcpId,
             "name": usr.bcpName,
             "permission": usr.permissions,
+            "oldPermissions": oldPermission
         }
     })
 
@@ -61,7 +59,7 @@ def addNewTournament(db, form):
         else:
             manageUsers(db, tor)
         result = updateStats(tor)
-        if result.json['status'] == 200:
+        if result.status_code == 200:
             return jsonify({
                 "status": 200,
                 "message": "Ok",
@@ -77,7 +75,8 @@ def addNewTournament(db, form):
                     "users": [{
                         "id": user.bcpId,
                         "name": user.bcpName,
-                        "conference": Conference.query.filter_by(id=user.conference).first().name,
+                        "conference": city.conference.name,
+                        "city": city.name,
                         "score": userTournament.ibericonScore,
                         "profilePic": user.profilePic,
                         "faction": {
@@ -88,10 +87,12 @@ def addNewTournament(db, form):
                             "id": club.bcpId,
                             "name": club.name
                         }
-                    } for user, userTournament, faction, club in current_app.config['database'].session.query(User, UserTournament, Faction, Club)
+                    } for user, userTournament, faction, club, city in current_app.config['database']
+                        .session.query(User, UserTournament, Faction, Club, City)
                         .join(UserTournament, User.id == UserTournament.userId)
                         .join(Faction, Faction.id == UserTournament.factionId)
                         .join(Club, Club.id == UserTournament.clubId)
+                        .join(City, City.id == User.city)
                         .filter(UserTournament.tournamentId == tor.id).all()]
                 }
             })
@@ -223,6 +224,7 @@ def addUserFromTournament(db, usr, tor):
             bcpId=usr['userId'],
             bcpName=usr['user']['firstName'].strip() + " " + usr['user']['lastName'].strip(),
             conference=tor.conference,
+            city=tor.city,
             permissions=0,
             registered=False
         ))
@@ -402,10 +404,12 @@ def updateAlgorithm():
     })
 
 
-def deleteTournament(to):
-    UserTournament.query.filter_by(tournamentId=to).delete()
-    current_app.config['database'].session.delete(Tournament.query.filter_by(id=to).first())
+def deleteTournament(query):
+    tor = Tournament.query.filter_by(bcpId=query.id).first()
+    UserTournament.query.filter_by(tournamentId=tor.id).delete()
+    current_app.config['database'].session.delete(Tournament.query.filter_by(bcpId=query.id).first())
     current_app.config['database'].session.commit()
+    _ = updateStats()
     return jsonify({
         "status": 200,
         "message": "Ok"

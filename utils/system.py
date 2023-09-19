@@ -10,13 +10,14 @@ from bpApiAdmin import limiter
 
 
 def createApp(app):
-    config = json.load(open("secret/config.json"))
-
-    app.config["SECRET_KEY"] = handleSecretKey()
+    with open("secret/config.json") as conf:
+        config = json.load(conf)
+        conf.close()
+    app.config["SECRET_KEY"] = handleSecretKey(config)
     app.config['PORT'] = config['port']
     app.config['HOST'] = config['host']
 
-    app.config["JWT_SECRET_KEY"] = handleSecretKey()
+    app.config["JWT_SECRET_KEY"] = handleSecretKey(config)
     app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 
     app.config["SQLALCHEMY_DATABASE_URI"] = config['db-uri']
@@ -65,8 +66,7 @@ def createDatabase(app):
             file.close()
 
 
-def handleSecretKey():
-    keys = json.load(open("secret/config.json"))
+def handleSecretKey(keys):
     if keys['secret-key']:
         return keys['secret-key']
     else:

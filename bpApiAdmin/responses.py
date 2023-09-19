@@ -36,6 +36,7 @@ class Models:
         id: str = Field(None, description="BCP Id")
         name: str = Field(None, description="BCP Name")
         permission: int = Field(None, description="Ibericon Permissions")
+        oldPermission: int = Field(None, description="Ibericon Old Permissions")
 
     class Tournament(BaseModel):
         id: str = Field(None, description="BCP Id")
@@ -59,3 +60,5 @@ class Responses:
 
     class AddTournament(BaseResponse):
         data: Models.Tournament
+
+

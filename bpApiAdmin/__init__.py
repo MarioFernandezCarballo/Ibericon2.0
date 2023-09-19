@@ -62,7 +62,6 @@ def addNewTournamentApiEndPoint(query: Queries.AddTournament):
 @only_collaborator
 def deleteTournamentApiEndPoint(query: Queries.DeleteTournament):
     result = deleteTournament(query)
-    updateStats()
     return result
 
 

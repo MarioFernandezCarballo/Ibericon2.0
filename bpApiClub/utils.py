@@ -4,7 +4,7 @@ from sqlalchemy import desc
 from database import Club, Tournament, UserTournament, Conference
 
 
-def getClubs(query, qty=0):
+def getClubs(query):
     result = Club.query
     if query.conference:
         conference = Conference.query.filter_by(name=query.conference).first()
@@ -26,7 +26,7 @@ def getClubs(query, qty=0):
                 "name": cl.name,
                 "conference": cl.conference,
                 "score": cl.ibericonScore
-            } for cl in result[0:qty-1]]
+            } for cl in result]
         })
 
 
@@ -38,3 +38,41 @@ def getClub(query):
                                                            ).filter(UserTournament.clubId == query.bcpId
                                                                     ).join(Tournament, Tournament.id == UserTournament.tournamentId
                                                                            ).join(Club, Club.id == UserTournament.clubId).all()
+
+def modifyClub(query):
+    club = Club.query.filter_by(name=query.name).first()
+    if club:
+        data = {
+            "id": club.bcpId,
+            "name": club.name,
+            "conference": None,
+            "oldConference": None,
+            "newPic": False
+        }
+        if query.conference:
+            oldConference = Conference.query.filter_by(id=club.conference).first()
+            conference = Conference.query.filter_by(name=query.conference).first()
+            if conference:
+                club.conference = conference.id
+                data['conference'] = conference.name
+                data['oldConference'] = oldConference.name
+            else:
+                return jsonify({
+                    "status": 404,
+                    "message": "Conference not found",
+                    "data": {}
+                })
+        if query.profilePic:
+            club.profilePic = query.profilePic  # TODO ver cómo volcar imagen en base de datos
+            data['newPic'] = True
+        current_app.config['database'].session.commit()
+        return jsonify({
+            "status": 200,
+            "message": "Ok",
+            "data": data
+        })
+    return jsonify({
+        "status": 404,
+        "message": "Club not found",
+        "data": {}
+    })

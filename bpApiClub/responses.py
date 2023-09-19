@@ -31,6 +31,13 @@ class Models:
         users: List[Users.User] = Field([], description="Club users")
         tournaments: List[Tournament.Tournament] = Field([], description="Club tournaments")
 
+    class ChangeClubConference(BaseModel):
+        id: str = Field(None, description="BCP Id")
+        name: str = Field(None, description="BCP Name")
+        conference: str = Field(None, description="Ibericon conference Id")
+        oldConference: str = Field(None, description="Ibericon old conference")
+        newPic: str = Field(None, description="New Club image")
+
 
 class Responses:
     class BaseResponse(BaseModel):
@@ -42,3 +49,6 @@ class Responses:
 
     class Detail(BaseResponse):
         data: Models.ClubDetail = Field({}, description="Club details")
+
+    class Modify(BaseResponse):
+        data: Models.ChangeClubConference = Field({}, description="Club conference modified")

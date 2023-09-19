@@ -18,21 +18,8 @@ userApiBP = APIBlueprint('userApiBluePrint', __name__, url_prefix='/api/user')
                     200: Responses.Ranking,
                 })
 def userRankingApiEndPoint(query: Queries.Ranking):
-    usr = getUsers(query.conference)  # TODO hacer aquí el join de region y otras cosas
-    users = []
-    for u in usr:
-        conference = Conference.query.filter_by(id=u.conference).first()
-        users.append({
-            'id': u.bcpId,
-            'name': u.bcpName,
-            'conference': conference.name,
-            'scoreGlobal': u.ibericonScore,
-        })
-    return jsonify({
-        "status": 200,
-        "message": "Successful",
-        "data": users
-    })
+    result = getUsers(query)
+    return result
 
 
 @userApiBP.get("/detail",
@@ -43,18 +30,8 @@ def userRankingApiEndPoint(query: Queries.Ranking):
                 })
 def userDetailApiEndPoint(query: Queries.Detail):
     user = getUserOnly(query.bcpId)
-    usr = getUser(query.bcpId)
-    conference = Conference.query.filter_by(id=user.conference).first()
-    return jsonify({
-        "status": 200,
-        "message": "Successful",
-        "data": {
-            'id': user.bcpId,
-            'name': user.bcpName,
-            'conference': conference.name,
-            'scoreGlobal': user.ibericonScore,
-        }
-    })
+    result = getUser(query)
+    return result
 
 
 @userApiBP.get("/profile",

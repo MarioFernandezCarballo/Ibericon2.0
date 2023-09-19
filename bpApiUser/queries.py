@@ -4,7 +4,7 @@ from typing import Optional
 
 class Queries:
     class Ranking(BaseModel):
-        conference: Optional[str] = Field([], description="Conference of Ibericon")
+        conference: Optional[str] = Field(None, description="Conference of Ibericon")
 
     class Detail(BaseModel):
         bcpId: str = Field(None, description="BCP Id")

@@ -12,7 +12,7 @@ from flask_login import login_user, logout_user
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from database import User, Conference
+from database import User, City
 
 
 # Function to register a user
@@ -23,14 +23,15 @@ def userSignup(database, form):
         # Hash the user's password
         hashed_password = generate_password_hash(form.password, method='scrypt')
         user = User.query.filter_by(bcpId=data['id']).first()
-        conference = Conference.query.filter_by(name=form.conference).first()
+        city = City.query.filter_by(name=form.city).first()
         if user:
             if not user.registered:
                 # Update user data if the user already exists but is not registered
                 user.bcpMail = data['email']
                 user.password = hashed_password
                 user.registered = True
-                user.conference = conference.id
+                user.conference = city.conference.id
+                user.city = city.id
                 database.session.commit()
                 # Create a response with user information and set cookies
                 response = jsonify({
@@ -40,7 +41,8 @@ def userSignup(database, form):
                         "id": user.bcpId,
                         "name": user.bcpName,
                         "mail": user.bcpMail,
-                        "conference": user.conference
+                        "conference": city.conference.name,
+                        "city": city.name
                     }
                 })
                 return setUserInfo(response, user)
@@ -56,7 +58,8 @@ def userSignup(database, form):
             password=hashed_password,
             bcpName=data['firstName'] + " " + data['lastName'],
             permissions=0,
-            conference=conference.id,
+            city=city.id,
+            conference=city.conference.id,
             registered=True
         )
         database.session.add(new_user)
@@ -69,7 +72,8 @@ def userSignup(database, form):
                 "id": new_user.bcpId,
                 "name": new_user.bcpName,
                 "mail": new_user.bcpMail,
-                "conference": new_user.conference
+                "conference": city.conference.name,
+                "city": city.name
             }
         })
         return setUserInfo(response, new_user)
@@ -103,6 +107,7 @@ def userLogin(form):
     user = User.query.filter_by(bcpMail=form.mail).first()
     if user:
         if check_password_hash(user.password, form.password):
+            city = City.query.filter_by(id=user.city).first()
             # Create a response with user information and set cookies
             response = jsonify({
                 "status": 200,
@@ -111,7 +116,8 @@ def userLogin(form):
                     "id": user.bcpId,
                     "name": user.bcpName,
                     "mail": user.bcpMail,
-                    "conference": user.conference
+                    "conference": city.conference.name if city else None,
+                    "city": city.name if city else None
                 }
             })
             return setUserInfo(response, user)
