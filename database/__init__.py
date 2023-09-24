@@ -19,6 +19,7 @@ class User(db.Model, UserMixin):
     profilePic = db.Column(db.LargeBinary)  # TODO b64encode(user.profilePic)
     conference = db.Column(db.Integer, db.ForeignKey('conference.id'))
     city = db.Column(db.Integer, db.ForeignKey('city.id'))
+    winRate = db.Column(db.Float)
     factions = db.relationship('Faction', secondary="userfaction", cascade='all,delete', back_populates='users')
     teams = db.relationship('Team', secondary="userteam", cascade='all,delete', back_populates='users')
     clubs = db.relationship('Club', secondary="userclub", cascade='all,delete', back_populates='users')
@@ -43,6 +44,7 @@ class Club(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     bcpId = db.Column(db.String(30), nullable=False)
     name = db.Column(db.String(50), nullable=False)
+    profilePic = db.Column(db.LargeBinary)  # TODO b64encode(user.profilePic)
     conference = db.Column(db.Integer, db.ForeignKey('conference.id'))
     shortName = db.Column(db.String(50))
     ibericonScore = db.Column(db.Float, default=0.0)
@@ -75,9 +77,9 @@ class Tournament(db.Model):
     totalPlayers = db.Column(db.Integer)
     rounds = db.Column(db.Integer)
     users = db.relationship('User', secondary="usertournament", cascade='all,delete', back_populates='tournaments', overlaps="tournaments,tournaments,tournaments")
-    teams = db.relationship('Team', secondary="usertournament", cascade='all,delete', back_populates='tournaments', overlaps="tournaments,tournaments,tournaments,users")  # TODO este dato es necesario?
-    clubs = db.relationship('Club', secondary="usertournament", cascade='all,delete', back_populates='tournaments', overlaps="teams,tournaments,tournaments,tournaments,users")  # TODO este dato es necesario?
-    factions = db.relationship('Faction', secondary="usertournament", cascade='all,delete', back_populates='tournaments', overlaps="clubs,teams,tournaments,tournaments,tournaments,users")  # TODO este dato es necesario?
+    teams = db.relationship('Team', secondary="usertournament", cascade='all,delete', back_populates='tournaments', overlaps="tournaments,tournaments,tournaments,users")
+    clubs = db.relationship('Club', secondary="usertournament", cascade='all,delete', back_populates='tournaments', overlaps="teams,tournaments,tournaments,tournaments,users")
+    factions = db.relationship('Faction', secondary="usertournament", cascade='all,delete', back_populates='tournaments', overlaps="clubs,teams,tournaments,tournaments,tournaments,users")
 
 
 class UserTournament(db.Model):
@@ -95,7 +97,11 @@ class UserTournament(db.Model):
     ibericonScore = db.Column(db.Float, default=0.0)
     ibericonTeamScore = db.Column(db.Float, default=0.0)
     countingScore = db.Column(db.Boolean, default=False)
-    performance = db.Column(db.String(500))
+    won = db.Column(db.Integer)
+    tied = db.Column(db.Integer)
+    lost = db.Column(db.Integer)
+    opponents = db.Column(db.PickleType)
+    performance = db.Column(db.String(400))
 
 
 class UserFaction(db.Model):
@@ -104,7 +110,7 @@ class UserFaction(db.Model):
     userId = db.Column(db.Integer, db.ForeignKey('user.id'))
     factionId = db.Column(db.Integer, db.ForeignKey('faction.id'))
     ibericonScore = db.Column(db.Float, default=0.0)
-    winRate = db.Column(db.Float, default=0.0)  # TODO
+    winRate = db.Column(db.Float, default=0.0)  # TODO Futuro
 
 
 class UserTeam(db.Model):

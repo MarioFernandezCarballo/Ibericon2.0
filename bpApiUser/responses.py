@@ -17,12 +17,15 @@ class Factions:
     class Faction(BaseModel):
         id: str = Field(None, description="BCP Id")
         name: str = Field(None, description="BCP Name")
+        score: float = Field(None, description="Faction score for this user")
 
 
 class Clubs:
     class Club(BaseModel):
         id: str = Field(None, description="BCP Id")
         name: str = Field(None, description="BCP Name")
+        score: float = Field(None, description="Club score for this user")
+        pic: str = Field(None, description="Club picture")
 
 
 class Teams:
@@ -50,7 +53,9 @@ class Tournaments:
         faction: Factions.Faction = Field(None, description="Tournament Faction")
         club: Clubs.Club = Field(None, description="Tournament Club")
         performance: str = Field(None, description="Tournament performance")
-        # TODO ... performance
+        won: int = Field(None, description="Games won")
+        tied: int = Field(None, description="Games tied")
+        lost: int = Field(None, description="Games lost")
 
 
 class Models:
@@ -68,7 +73,7 @@ class Models:
         teams: List[Teams.Team] = Field([], description="User's teams")
         clubs: List[Clubs.Club] = Field([], description="User's clubs")
         tournaments: List[Tournaments.Tournament] = Field([], description="User's tournaments")
-        # TODO ... rates
+        winRate: float = Field(None, description="User winrate")
 
 
 class Responses:

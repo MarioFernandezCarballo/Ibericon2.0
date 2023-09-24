@@ -37,17 +37,10 @@ def getUsers(query, qty=0):
 
 
 def getUser(query):
-  # TODO estoy aqui en medio
-    user = (current_app.config["database"].session.query(User, City)
+    userBd = (current_app.config["database"].session.query(User, City)
             .filter(User.bcpId == query.bcpId)
             .join(City, City.id == User.city)
             .first())
-    userFactions = (current_app.config["database"]
-                    .session.query(Faction, UserFaction, User)
-                    .join(UserFaction, UserFaction.factionId == Faction.id)
-                    .join(User, User.id == UserFaction.userId)
-                    .filter(User.bcpId == query.bcpId)
-                    .all())
     userDetail = (current_app.config["database"]
             .session.query(User, UserFaction, UserClub, Faction, Club)
             .filter(User.bcpId == query.bcpId)
@@ -62,47 +55,57 @@ def getUser(query):
                     .join(City, City.id == Tournament.city)
                     .join(Faction, Faction.id == UserTournament.factionId)
                     .join(Club, Club.id == UserTournament.clubId)
-                    .filter(UserTournament.userId == user.User.id)
+                    .filter(UserTournament.userId == userBd.User.id)
                     .order_by(desc(UserTournament.ibericonScore))
                     .all())
+    factAux = []
+    factions = []
+    clubAux = []
+    clubs = []
+    for user, userFaction, userClub, faction, club in userDetail:
+        if faction.name not in factAux:
+            factAux.append(faction.name)
+            factions.append({
+                "id": faction.bcpId,
+                "name": faction.name,
+                "score": userFaction.ibericonScore
+            })
+        if club.name not in clubAux:
+            clubAux.append(club.name)
+            clubs.append({
+                "id": club.bcpId,
+                "name": club.name,
+                "score": userClub.ibericonScore,
+                "pic": club.profilePic  # TODO volcar imagen aqui
+            })
+
     return jsonify({
         "status": 200,
         "message": "Successful",
         "data":
             {
-                'id': user.User.bcpId,
-                'name': user.User.bcpName,
+                'id': userBd.User.bcpId,
+                'name': userBd.User.bcpName,
                 'conference': {
-                    "id": user.City.conference.id,
-                    "name": user.City.conference.name
+                    "id": userBd.City.conference.id,
+                    "name": userBd.City.conference.name
                 },
                 'city': {
-                    "id": user.City.id,
-                    "name": user.City.name
+                    "id": userBd.City.id,
+                    "name": userBd.City.name
                 },
-                'score': user.User.ibericonScore,
-                'profilePic': user.User.profilePic,
-                'isClassified': user.User.isClassified,
-                'factions': [
-                    {
-                        "id": faction.bcpId,
-                        "name": faction.name,
-                        "score": userFaction.ibericonScore
-                    }
-                for user, userFaction, userClub, faction, club in userDetail],
+                'score': userBd.User.ibericonScore,
+                'profilePic': userBd.User.profilePic,  # TODO volcar imagen aqui
+                'isClassified': userBd.User.isClassified,
+                'winRate': userBd.User.winRate,
+                'factions': factions,
                 'teams': [
                     {
                         "id": team.bcpId,
                         "name": team.name
                     }
-                for team in user.User.teams],
-                'clubs': [
-                    {
-                        "id": club.bcpId,
-                        "name": club.name,
-
-                    }
-                for user, userFaction, userClub, faction, club in userDetail],
+                for team in userBd.User.teams],
+                'clubs': clubs,
                 'tournaments': [
                     {
                         "id": tournament.bcpId,
@@ -126,6 +129,9 @@ def getUser(query):
                         "innerId": userTournament.innerId,
                         "position": userTournament.position,
                         "performance": userTournament.performance,
+                        "won": userTournament.won,
+                        "tied": userTournament.tied,
+                        "lost": userTournament.lost,
                         "faction": {
                             "id": faction.bcpId,
                             "name": faction.name

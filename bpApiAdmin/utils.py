@@ -55,7 +55,8 @@ def addNewTournament(db, form):
             })
         tor = manageTournament(db, info)
         if tor.isTeam:
-            manageTeams(db, tor)
+            # manageTeams(db, tor)
+            manageUsers(db, tor)
         else:
             manageUsers(db, tor)
         result = updateStats(tor)
@@ -139,7 +140,11 @@ def manageUsers(db, tor):
         tor.users.append(usr)
         usrTor = UserTournament.query.filter_by(userId=usr.id).filter_by(tournamentId=tor.id).first()
         usrTor.position = user['placing']
+        usrTor.opponents = user['opponentIds']
         usrTor.performance = json.dumps(user['total_games'])
+        usrTor.won = len([gameRes['gameResult'] for gameRes in user['total_games'] if gameRes['gameResult'] == 2])
+        usrTor.tied = len([gameRes['gameResult'] for gameRes in user['total_games'] if gameRes['gameResult'] == 1])
+        usrTor.lost = len([gameRes['gameResult'] for gameRes in user['total_games'] if gameRes['gameResult'] == 0])
         usrTor.innerId = user['playerId']
         usrTor.ibericonScore = algorithm(tor, user)
 
@@ -152,70 +157,6 @@ def manageUsers(db, tor):
                 usr.clubs.append(cl)
             usrTor.clubId = cl.id
         db.session.commit()
-
-
-def manageTeams(db, tor):  # TODO test this all
-    uri = current_app.config["BCP_API_TEAM"].replace("####event####", tor.bcpId)
-    response = requests.get(uri, headers=current_app.config["BCP_API_HEADERS"])
-    infoTeams = json.loads(response.text)
-    uri = current_app.config["BCP_API_TEAM_PLACINGS"].replace("####event####", tor.bcpId)
-    response = requests.get(uri, headers=current_app.config["BCP_API_HEADERS"])
-    infoTeamPlacings = json.loads(response.text)
-    uri = current_app.config["BCP_API_USERS"].replace("####event####", tor.bcpId)
-    response = requests.get(uri, headers=current_app.config["BCP_API_HEADERS"])
-    infoUsers = json.loads(response.text)
-    for teamPlacing in infoTeamPlacings['data']:
-        team = [tpl for tpl in infoTeams['data'] if tpl['id'] == teamPlacing['id']][0]
-        uss = [u for u in infoUsers['data'] if u['objectId'] in [pl['objectId'] for pl in team['players']]]
-        tm = addTeamFromTournament(db, team)
-        if tm:
-            tor.teams.append(tm)
-
-        for us in uss:
-            usr = addUserFromTournament(db, us, tor)
-            fct = addFactionFromTournament(db, us)
-            cl = addClubFromTournament(db, us, tor)
-
-            tor.users.append(usr)
-            tm.users.append(usr)
-
-            usrTor = UserTournament.query.filter_by(userId=usr.id).filter_by(tournamentId=tor.id).first()
-            usrTor.position = us['placing']
-            usrTor.performance = json.dumps('total_games')
-            usrTor.innerId = us['playerId']
-
-            usrTor.teamPosition = teamPlacing['placing']
-
-            performance = [0, 0, 0]
-            maxPoints = len(teamPlacing['games']) * 3
-            maxIbericon = 3
-            playerModifier = 1 + tor.totalPlayers / 100
-            for game in teamPlacing['games']:
-                performance[game['gameResult']] += 1
-            points = ((performance[2] * 3) + performance[1])
-            finalPoints = points * maxIbericon / maxPoints
-            usrTor.ibericonTeamScore = finalPoints * playerModifier * 10
-            usrTor.teamId = tm.id
-
-            performance = [0, 0, 0]
-            maxPoints = len(us['games']) * 3
-            maxIbericon = 3
-            playerModifier = 1 + tor.totalPlayers / 100
-            for game in us['games']:
-                performance[game['gameResult']] += 1
-            points = ((performance[2] * 3) + performance[1])
-            finalPoints = points * maxIbericon / maxPoints
-            usrTor.ibericonScore = finalPoints * playerModifier * 10
-
-            if fct:
-                if fct not in usr.factions:
-                    usr.factions.append(fct)
-                usrTor.factionId = fct.id
-            if cl:
-                if cl not in usr.clubs:
-                    usr.clubs.append(cl)
-                usrTor.clubId = cl.id
-            db.session.commit()
 
 
 def addUserFromTournament(db, usr, tor):
@@ -275,24 +216,22 @@ def updateStats(tor=None):
         for usr in tor.users:
             best = current_app.config['database'].session.query(UserTournament, Tournament).order_by(desc(UserTournament.ibericonScore)).filter(
                 UserTournament.userId == usr.id).join(Tournament, Tournament.id == UserTournament.tournamentId).all()
-            cities = {}
             score = 0
             counter = 0
+            won = 0
+            tied = 0
+            lost = 0
             for to in best:
-                if not to.Tournament.isTeam:
-                    to.UserTournament.countingScore = False
-                    try:
-                        cities[to.Tournament.city] += 1
-                    except KeyError:
-                        cities[to.Tournament.city] = 1
-
-                    if cities[to.Tournament.city] <= 3:
-                        score += to.UserTournament.ibericonScore
-                        to.UserTournament.countingScore = True
-                        counter += 1
-                    if counter == 4:
-                        break
+                to.UserTournament.countingScore = False
+                if counter < 5:
+                    score += to.UserTournament.ibericonScore
+                    to.UserTournament.countingScore = True
+                    counter += 1
+                won += to.UserTournament.won
+                tied += to.UserTournament.tied
+                lost += to.UserTournament.lost
             usr.ibericonScore = score
+            usr.winRate = 100 * won / (won + tied + lost)
             for usrFct in UserFaction.query.filter_by(userId=usr.id).all():
                 score = 0
                 count = 0
@@ -300,7 +239,7 @@ def updateStats(tor=None):
                     if t.UserTournament.factionId == usrFct.factionId:
                         count += 1
                         score += t.UserTournament.ibericonScore
-                    if count == 3:
+                    if count == 4:
                         break
                 usrFct.ibericonScore = score
             for usrCl in UserClub.query.filter_by(userId=usr.id).all():
@@ -328,24 +267,22 @@ def updateStats(tor=None):
         for usr in User.query.all():
             best = current_app.config['database'].session.query(UserTournament, Tournament).order_by(desc(UserTournament.ibericonScore)).filter(
                 UserTournament.userId == usr.id).join(Tournament, Tournament.id == UserTournament.tournamentId).all()
-            cities = {}
             score = 0
             counter = 0
+            won = 0
+            tied = 0
+            lost = 0
             for to in best:
-                if not to.Tournament.isTeam:
-                    to.UserTournament.countingScore = False
-                    try:
-                        cities[to.Tournament.city] += 1
-                    except KeyError:
-                        cities[to.Tournament.city] = 1
-
-                    if cities[to.Tournament.city] <= 3:
-                        score += to.UserTournament.ibericonScore
-                        to.UserTournament.countingScore = True
-                        counter += 1
-                    if counter == 4:
-                        break
+                to.UserTournament.countingScore = False
+                if counter < 5:
+                    score += to.UserTournament.ibericonScore
+                    to.UserTournament.countingScore = True
+                    counter += 1
+                won += to.UserTournament.won
+                tied += to.UserTournament.tied
+                lost += to.UserTournament.lost
             usr.ibericonScore = score
+            usr.winRate = won / (won + tied + lost)
             for usrFct in UserFaction.query.filter_by(userId=usr.id).all():
                 score = 0
                 count = 0
@@ -353,7 +290,7 @@ def updateStats(tor=None):
                     if t.UserTournament.factionId == usrFct.factionId:
                         count += 1
                         score += t.UserTournament.ibericonScore
-                    if count == 3:
+                    if count == 4:
                         break
                 usrFct.ibericonScore = score
             for usrCl in UserClub.query.filter_by(userId=usr.id).all():

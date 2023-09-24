@@ -1,8 +1,9 @@
+import tokenize
+
 from flask import current_app, jsonify
 
 from sqlalchemy import desc
-from database import Club, Tournament, UserTournament, Conference
-
+from database import Club, UserClub, Conference
 
 def getClubs(query):
     result = Club.query
@@ -29,15 +30,32 @@ def getClubs(query):
             } for cl in result]
         })
 
-
 def getClub(query):
-    # TODO terminar esto cuando esté definido user y tournament
-    cl = Club.query.filter_by(id=query.bcpId).first()
-    if cl:
-        res = current_app.config["database"].session.query(UserTournament, Tournament, Club
-                                                           ).filter(UserTournament.clubId == query.bcpId
-                                                                    ).join(Tournament, Tournament.id == UserTournament.tournamentId
-                                                                           ).join(Club, Club.id == UserTournament.clubId).all()
+    result = Club.query.filter_by(bcpId=query.bcpId).first()
+    return jsonify({
+        "status": 200,
+        "message": "Ok",
+        "data": {
+            "id": result.bcpId,
+            "name": result.name,
+            "conference": result.conference,
+            "score": result.ibericonScore,
+            "users": [{
+                "id": us.bcpId,
+                "name": us.bcpName,
+                "score": UserClub.query.filter_by(userId=us.id).filter_by(clubId=result.id).first().ibericonScore,
+                "profilePid": us.profilePic,  # TODO volcar imagen
+                "isClassified": us.isClassified
+            } for us in result.users],
+            "tournaments": [{
+                "id": to.bcpId,
+                "name": to.name,
+                "uri": to.bcpUri,
+                "conference": Conference.query.filter_by(id=to.conference).first().name,
+                "date": to.date
+            } for to in result.tournaments]
+        }
+    })
 
 def modifyClub(query):
     club = Club.query.filter_by(name=query.name).first()

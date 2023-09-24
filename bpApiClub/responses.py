@@ -6,7 +6,6 @@ class Users:
     class User(BaseModel):
         id: str = Field(None, description="BCP Id")
         name: str = Field(None, description="BCP Name")
-        conference: int = Field(None, description="Your Ibericon conference Id")
         score: int = Field(None, description="Ibericon global Score")
         profilePic: str = Field(None, description="Profile pic (Base64 str)")
         isClassified: bool = Field(None, description="Is this user classified?")
