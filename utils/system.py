@@ -39,6 +39,7 @@ def createApp(app):
 
     app.config["COLLABORATOR_USERNAME"] = config['collab-name']
     app.config["COLLABORATOR_PASSWORD"] = config['collab-password']
+    app.config["COLLAB_MAIL"] = config['collab-mail']
 
     loginManager.init_app(app)
     app.config["loginManager"] = loginManager
@@ -96,7 +97,7 @@ def createAdmin(app):
 def createCollaborator(app):
     new_user = User(
         bcpId="0000000000",
-        bcpMail=app.config["ADMIN_MAIL"],
+        bcpMail=app.config["COLLAB_MAIL"],
         bcpName=app.config["COLLABORATOR_USERNAME"],
         password=generate_password_hash(app.config["COLLABORATOR_PASSWORD"], method='scrypt'),
         permissions=13
