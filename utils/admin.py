@@ -2,6 +2,7 @@ from flask import current_app, jsonify
 from datetime import datetime, timedelta
 import requests
 import json
+import base64
 from sqlalchemy import desc
 from database import *
 
@@ -185,6 +186,12 @@ def addClubFromTournament(te, tor):
             response = requests.get(uri, headers=current_app.config["BCP_API_HEADERS"])
             img = json.loads(response.text)
             imgUrl = img['url']
+            res = requests.get(imgUrl, stream=True)
+            img = base64.b64encode(res.content)
+            response = requests.post(current_app.config['IMAGE_BB_UPLOAD'],
+                                     params={'key': current_app.config['IMAGE_BB_KEY']},
+                                     data={'image': img})
+            imgUrl = json.loads(response.text)['data']['url']
         if not Club.query.filter_by(bcpId=te['teamId']).first():
             current_app.config['database'].session.add(Club(
                 bcpId=te['teamId'],

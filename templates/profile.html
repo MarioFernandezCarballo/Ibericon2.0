@@ -6,12 +6,14 @@
         <div class="box-view box-view-profile" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
             <div class="profile-container">
                 <img src="{{ usr.profilePic }}" class="rounded-circle shadow-4 kt-avatar-profile" alt="Avatar" />
-                <div class="profile-info">
-                    <p class="h1"><strong>{{ usr.bcpName }}</strong></p>
-                    <p class="h2"><small>Conferencia: </small><strong>{{ conference.name }}</strong></p>
-                    <p class="h2"><small>Equipo: </small><strong>{{ club.name }}</strong></p>
-                    <p class="h2"><small>Facción más jugada: </small><strong>{{ common.name }}</strong></p>
-                    <p class="h2"><small>Última facción jugada: </small><strong>{{ last.name }}</strong></p>
+                <div class="profile-info p-i-col">
+                    <p class="h2"><strong>{{ usr.bcpName }}</strong></p>
+                    <div>
+                        <p class="h6"><small>Conferencia: </small><strong>{{ conference.name }}</strong></p>
+                        <p class="h6"><small>Equipo: </small><strong>{{ club.name }}</strong></p>
+                        <p class="h6"><small>Facción más jugada: </small><strong>{{ common.name }}</strong></p>
+                        <p class="h6"><small>Última facción jugada: </small><strong>{{ last.name }}</strong></p>
+                    </div>
                 </div>
             </div>
         </div>

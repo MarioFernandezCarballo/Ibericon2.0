@@ -52,9 +52,10 @@ def getUserMostPlayedClub(usr):
 
 
 def getUserLastFaction(usr):
-    usT = current_app.config['database'].session.query(UserTournament).filter(UserTournament.userId == usr.id).order_by(desc(UserTournament.id)).limit(1).first()
-    if usT:
-        return Faction.query.filter_by(id=usT.factionId).first() if usT.factionId else None
+    usT = UserTournament.query.filter_by(userId=usr.id).all()
+    mcf = mode([f.factionId for f in usT if f.factionId])
+    if mcf:
+        return Faction.query.filter_by(id=mcf).first()
     return None
 
 
@@ -76,6 +77,16 @@ def getUsersWinRate(qty=0):
         return result[0:qty-1]
     else:
         return User.query.filter(User.bcpId != "0000000000").order_by(desc(User.winRate)).all()
+
+
+def getUserGlobalPosition(usr):
+    users = User.query.filter(User.bcpId != "0000000000").order_by(desc(User.ibericonScore)).all()
+    return users.index(usr) + 1
+
+
+def getUserConferencePosition(usr):
+    users = User.query.filter(User.bcpId != "0000000000").filter_by(conference=usr.conference).order_by(desc(User.ibericonScore)).all()
+    return users.index(usr) + 1
 
 def updateProfile(usr, form):
     usr = User.query.filter_by(id=usr.id)

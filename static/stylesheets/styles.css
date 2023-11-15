@@ -251,7 +251,7 @@ header ul li a:hover::before{
     background-color: var(--primari-black);
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
     color: var(--primari-white);
     width: 100%;
     padding: 24px;
@@ -508,6 +508,10 @@ header ul li a:hover::before{
     display: flex;
     flex-direction: column;
 }
+.p-i-col{
+    height:100%;
+    justify-content: space-evenly;
+}
 .no-border {
     border-bottom: 0px solid var(--primari-white) !important;
 }
@@ -536,16 +540,23 @@ header ul li a:hover::before{
     width: 100%;
 }
 .position-item{
-    background-color: var(--primari-white);
+    background-color: rgba(235, 234, 234, .7);
     border-radius: 5px;
     color: var(--primari-black);
+    text-align: center;
+    padding: 10px;
 }
 .kt-mr-10{
-    margin-right: 10px;
+    margin-right: 1%;
     margin-bottom: 0px !important;
+    border-radius: 5px;
+    width: 24%
 }
 .kt-avatar-position {
     width: 250px;
     height: 250px;
     margin-right: 24px;
+}
+.margin-right-20{
+    margin-right: 20px;
 }

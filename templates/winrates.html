@@ -47,6 +47,13 @@
 
                 var nameCell = document.createElement('td');
                 nameCell.style.width = '60%';
+                var imageAvatar = document.createElement('img');
+                imageAvatar.src = user.profilePic;
+                imageAvatar.classList.add('shadow-4')
+                imageAvatar.classList.add('rounded-circle')
+                imageAvatar.classList.add('kt-avatar')
+                nameCell.appendChild(imageAvatar);
+
                 var smallName = document.createElement('small');
                 smallName.textContent = user.bcpName.substring(0, 30);
                 nameCell.appendChild(smallName);

@@ -103,7 +103,7 @@ def profile():
 def position():
     from flask import render_template, request, redirect, url_for
     from flask_login import current_user
-    from utils import getUserOnly, getUserConference, updateProfile, getUserMostPlayedFaction, getUserMostPlayedClub, getUserLastFaction, getPastTournamentsByUser, getFutureTournamentsByUser
+    from utils import getUserConferencePosition, getUserGlobalPosition, getUserOnly, getUserConference, updateProfile, getUserMostPlayedFaction, getUserMostPlayedClub, getUserLastFaction, getPastTournamentsByUser, getFutureTournamentsByUser
     if request.method == 'POST':
         return updateProfile(current_user, request.form)
     usr = getUserOnly(current_user.id)
@@ -114,6 +114,8 @@ def position():
         club = getUserMostPlayedClub(usr)
         future = getFutureTournamentsByUser(usr)
         past = getPastTournamentsByUser(usr)
+        globalClass = getUserGlobalPosition(usr)
+        conferenceClass = getUserConferencePosition(usr)
         return render_template(
             'position.html',
             title=usr.bcpName,
@@ -124,6 +126,8 @@ def position():
             usr=usr,
             future=future,
             past=past,
+            globalClass=globalClass,
+            conferenceClass=conferenceClass,
             user=current_user if not current_user.is_anonymous else None
         )
     return redirect(url_for('dashboard'))
@@ -195,7 +199,7 @@ def tournamentsEndPoint():
         "players": len(u.Tournament.users),
         "conference": u.Conference.name,
         "imgUri": u.Tournament.imgUri
-    } for u in tors]
+    } for u in tors if not u.Tournament.isFinished]
     return render_template(
         'tournaments.html',
         title="Torneos",
