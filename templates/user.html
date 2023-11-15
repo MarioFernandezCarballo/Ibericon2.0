@@ -1,53 +1,54 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h2 class="link-h2">{{ userOnly.bcpName }} {{ userOnly.registered }}</h2>
-    <h4>Puntuación Ibericon: {{ '%0.2f'| format(userOnly.ibericonScore) }}</h4>
-    <div class="table-wrapper">
-        <table class="fl-table">
-            <thead>
-                <tr>
-                    <th>Torneo</th>
-                    <th>Posición</th>
-                    <th>Facción</th>
-                    <th>Equipo</th>
-                    <th>Puntuación</th>
-                </tr>
-            </thead>
-            <tbody>
+<div class="col-md-8 align-self-stretch">
+    <div class="box-view" style="background-image: url(../static/stylesheets/img/bg-invent-2.png);">
+      <p class="title-box">{{ userOnly.bcpName }} {{ '%0.2f'| format(userOnly.ibericonScore) }}</p>
+      <table class="fl-table">
+        <thead>
+        <tr>
+            <th>Torneo</th>
+            <th>Posición</th>
+            <th>Facción</th>
+            <th>Equipo</th>
+            <th>Puntuación</th>
+        </tr>
+        </thead>
+        <tbody>
             {% for usrTor in usr %}
-                {% for tor in userOnly.tournaments %}
-                    {% if usrTor.UserTournament.tournamentId == tor.id %}
-                        <tr onclick="window.open('{{ tor.bcpUri }}', '_blank');">
-                            <td>{{ tor.name | truncate(30, True, '...', 0) }}</td>
-                            <td>{{ usrTor.UserTournament.position }}</td>
-                            {% if usrTor.UserTournament.factionId is not none %}
-                                {% for fct in userOnly.factions %}
-                                    {% if fct.id == usrTor.UserTournament.factionId %}
-                                        <td>{{ fct.name | truncate(15, True, '...', 0) }}</td>
-                                    {% endif %}
-                                {% endfor %}
-                            {% else %}
-                                <td>-</td>
-                            {% endif %}
-                            {% if usrTor.UserTournament.teamId is not none %}
-                                {% for te in userOnly.teams %}
-                                    {% if te.id == usrTor.UserTournament.teamId %}
-                                        <td>{{ te.name }}</td>
-                                    {% endif %}
-                                {% endfor %}
-                            {% else %}
-                                <td>-</td>
-                            {% endif %}
-                            {% if usrTor.UserTournament.countingScore %}
-                                <td style="color: #FFF49B;">{{ '%0.2f'| format(usrTor.UserTournament.ibericonScore) }}</td>
-                            {% else %}
-                                <td>{{ '%0.2f'| format(usrTor.UserTournament.ibericonScore) }}</td>
-                            {% endif %}
-                        </tr>
-                    {% endif %}
-                {% endfor %}
+            {% for tor in userOnly.tournaments %}
+                {% if usrTor.UserTournament.tournamentId == tor.id %}
+                    <tr onclick="window.open('{{ tor.bcpUri }}', '_blank');">
+                        <td style="width: 40%;">{{ tor.name | truncate(20, True, '...', 0) }}</td>
+                        <td>{{ usrTor.UserTournament.position }}</td>
+                        {% if usrTor.UserTournament.factionId is not none %}
+                            {% for fct in userOnly.factions %}
+                                {% if fct.id == usrTor.UserTournament.factionId %}
+                                    <td>{{ fct.name | truncate(15, True, '...', 0) }}</td>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <td>-</td>
+                        {% endif %}
+                        {% if usrTor.UserTournament.teamId is not none %}
+                            {% for te in userOnly.teams %}
+                                {% if te.id == usrTor.UserTournament.teamId %}
+                                    <td>{{ te.name }}</td>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <td>-</td>
+                        {% endif %}
+                        {% if usrTor.UserTournament.countingScore %}
+                            <td style="color: #FFF49B;">{{ '%0.2f'| format(usrTor.UserTournament.ibericonScore) }}</td>
+                        {% else %}
+                            <td>{{ '%0.2f'| format(usrTor.UserTournament.ibericonScore) }}</td>
+                        {% endif %}
+                    </tr>
+                {% endif %}
             {% endfor %}
-            <tbody>
-        </table>
+        {% endfor %}
+                </tbody>
+    </table>
     </div>
+  </div>
 {% endblock %}

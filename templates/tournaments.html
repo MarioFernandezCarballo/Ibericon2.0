@@ -1,32 +1,143 @@
+
+
+
 {% extends 'base.html' %}
 {% block content %}
-    <h2 class="link-h2">Torneos</h2>
-    <div class="table-wrapper">
-        <table class="fl-table">
-            <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Fecha</th>
-                <th>Tipo</th>
-                <th>Participantes</th>
-                <th>Comunidad</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for tor in tors %}
-                <tr onclick="window.open('{{ tor.bcpUri }}', '_blank');">
-                    <td>{{ tor.name | truncate(30, True, '...', 0) }}</td>
-                    <td>{{ tor.date }}</td>
-                    {% if tor.isTeam %}
-                        <td>Equipos</td>
-                    {% else %}
-                        <td>Individual</td>
-                    {% endif %}
-                    <td>{{ tor.users|length }}</td>
-                    <td>{{ tor.city }}</td>
-                </tr>
-            {% endfor %}
-            <tbody>
-        </table>
+    <div class="container">
+        <div class="tournament-column">
+            <div class="col-md-6" style="margin-bottom: 30px;"><img class="w-100" src="../static/stylesheets/img/fake-map.png" alt=""></div>
+            <div class="col-md-12">
+                <div class="box-view" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
+                     <p class="title-box">Próximos Torneos</p>
+                    <table class="fl-table">
+                        <thead>
+                        <tr class="align-right-tr">
+                            <th style="width: 50%;"><small>Nombre</small></th>
+                            <th><small>Fecha</small></th>
+                            <th><small>Rondas</small></th>
+                            <th><small>Jugadores</small></th>
+                            <th><small>Conferencia</small></th>
+                        </tr>
+                        </thead>
+                        <tbody id="tournament-body">
+                        <tbody>
+                    </table>
+                    <nav aria-label="Page navigation" class="pagination-nav">
+                        <ul class="pagination" id="tournamentPagination">
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
     </div>
+   <script>
+    var tournaments = {{ tournaments | tojson | safe }};
+
+    var itemsPerPage = 5;
+    var currentPage = 1;
+
+    function renderTable(start, end, list, className) {
+        var tableBody = document.getElementById(className);
+        tableBody.innerHTML = '';
+        for (var i = start; i < end; i++) {
+            var tor = list[i];
+            if (tor) {
+                var row = document.createElement('tr');
+                row.classList.add("align-right-tr")
+                row.onclick = function () {
+                    location.href = tor.bcpUri;
+                };
+
+                var nameCell = document.createElement('td');
+                nameCell.style.width = '50%';
+                var imageAvatar = document.createElement('img');
+                imageAvatar.src = tor.imgUri;
+                imageAvatar.classList.add('shadow-4')
+                imageAvatar.classList.add('rounded-circle')
+                imageAvatar.classList.add('kt-avatar')
+
+                nameCell.appendChild(imageAvatar);
+                var smallName = document.createElement('small');
+                smallName.textContent = tor.name;
+                nameCell.appendChild(smallName);
+                row.appendChild(nameCell);
+
+                var dateCell = document.createElement('td');
+                var smallDate = document.createElement('small');
+                smallDate.textContent = tor.date;
+                dateCell.appendChild(smallDate);
+                row.appendChild(dateCell);
+
+                var roundCell = document.createElement('td');
+                var smallRound = document.createElement('small');
+                smallRound.textContent = tor.rounds;
+                roundCell.appendChild(smallRound);
+                row.appendChild(roundCell);
+
+                var playersCell = document.createElement('td');
+                var smallPlayers = document.createElement('small');
+                smallPlayers.textContent = tor.players;
+                playersCell.appendChild(smallPlayers);
+                row.appendChild(playersCell);
+
+                var conferenceCell = document.createElement('td');
+                var smallConference = document.createElement('small');
+                smallConference.textContent = tor.conference;
+                conferenceCell.appendChild(smallConference);
+                row.appendChild(conferenceCell);
+
+                tableBody.appendChild(row);
+            }
+        }
+    }
+
+    function renderPagination(idName, list, className, currentPage) {
+        var totalPages = Math.ceil(list.length / itemsPerPage);
+        var paginationElement = document.getElementById(idName);
+        paginationElement.innerHTML = '';
+
+        var liBack = document.createElement('li');
+        liBack.className = 'page-item';
+        var a = document.createElement('a');
+        a.className = 'page-link';
+        a.href = '#';
+        a.textContent = '<';
+        a.onclick = function () {
+            currentPage = currentPage - 1;
+            currentPage = currentPage < 1 ? 1 : currentPage
+            renderTable((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage, list, className);
+            renderPagination(idName, list, className, currentPage);
+        };
+        liBack.appendChild(a);
+        paginationElement.appendChild(liBack);
+
+        var liPage = document.createElement('li');
+        liPage.className = 'page-item';
+        var a = document.createElement('a');
+        a.className = 'page-link';
+        a.href = '#';
+        a.textContent = currentPage;
+        liPage.appendChild(a);
+        paginationElement.appendChild(liPage);
+
+        var liNext = document.createElement('li');
+        liNext.className = 'page-item';
+        var a = document.createElement('a');
+        a.className = 'page-link';
+        a.href = '#';
+        a.textContent = '>';
+        a.onclick = function () {
+            currentPage = currentPage + 1;
+            currentPage = currentPage > totalPages ? totalPages : currentPage
+            renderTable((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage, list, className);
+            renderPagination(idName, list, className, currentPage);
+        };
+        liNext.appendChild(a);
+        paginationElement.appendChild(liNext);
+    }
+
+    // Initial rendering
+    renderTable(0, itemsPerPage, tournaments, 'tournament-body');
+    renderPagination('tournamentPagination', tournaments, 'tournament-body', currentPage);
+</script>
 {% endblock %}

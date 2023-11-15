@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+      <div class="col-md-12 align-self-stretch">
+        <div class="box-view box-view-profile" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
+            <div class="position-container">
+              <div class="profile-info">
+                <img src="{{ usr.profilePic }}" class="rounded-circle shadow-4 kt-avatar-position" alt="Avatar" />
+                <button type="submit" class="type-btn mt-4">Actualizar perfil</button>
+              </div>
+                <div class="profile-info">
+                    <p class="h2"><strong>{{ usr.bcpName }}</strong></p>
+                    <p class="h5"><small>Conferencia: </small><strong>{{ conference.name }}</strong></p>
+                    <p class="h5"><small>Equipo: </small><strong>{{ club.name }}</strong></p>
+                    <p class="h5"><small>Facción más jugada: </small><strong>{{ common.name }}</strong></p>
+                    <p class="h5"><small>Última facción jugada: </small><strong>{{ last.name }}</strong></p>
+                  <div class="position-info">
+                    <div class="col-md-3 align-self-stretch kt-mr-10">
+                      <div class="box-view position-item">
+                        <img class="icon-general" src="../static/stylesheets/img/icon_tournament.svg" alt="">
+                        <p class="display-6">{{ numTour }}</p>
+                        <p>Clasificación</p>
+                      </div>
+                    </div>
+                    <div class="col-md-3 align-self-stretch kt-mr-10">
+                      <div class="box-view position-item">
+                        <img class="icon-general" src="../static/stylesheets/img/icon_tournament.svg" alt="">
+                        <p class="display-6">{{ numTour }}</p>
+                        <p>Torneos</p>
+                      </div>
+                    </div>
+                    <div class="col-md-3 align-self-stretch kt-mr-10">
+                      <div class="box-view position-item">
+                        <img class="icon-general" src="../static/stylesheets/img/icon_tournament.svg" alt="">
+                        <p class="display-6">{{ numTour }}</p>
+                        <p>Winrate</p>
+                      </div>
+                    </div>
+                    <div class="col-md-3 align-self-stretch kt-mr-10">
+                      <div class="box-view position-item">
+                        <img class="icon-general" src="../static/stylesheets/img/icon_tournament.svg" alt="">
+                        <p class="display-6">{{ numTour }}</p>
+                        <p>Facción</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  <div class="row">
+      <div class="col-md-4 align-self-stretch">
+        <div class="box-view" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
+          <p class="title-box">Torneos jugados</p>
+            <table class="fl-table">
+                <thead>
+                <tr>
+                    <th style="width: 70%;"><small>Nombre</small></th>
+                    <th><small>Posición</small></th>
+                    <th><small>Facción</small></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for tor in past %}
+                    <tr onclick="location.href='{{ tor.tournament.bcpUri }}';">
+                      <td style="width: 70%;"><img src="{{ tor.tournament.imgUri }}" class="rounded-circle shadow-4 kt-avatar"
+                                                     alt="Avatar" /><small>{{ tor.name | truncate(20, True, '...', 0) }}</small></td>
+                      <td><small>{{ tor.userTournament.position }}</small></td>
+                        <td><small>{{ tor.faction.name }}</small></td>
+                    </tr>
+                {% endfor %}
+                <tbody>
+            </table>
+        </div>
+      </div>
+      <div class="col-md-4 align-self-stretch">
+        <div class="box-view" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
+          <p class="title-box">Próximos torneos</p>
+            <div class="future-tournaments">
+                {% for tor in future %}
+                    <p><img src="{{ tor.imgUri }}" class="rounded-circle shadow-4 kt-avatar" alt="Avatar" /><small>{{ tor.name | truncate(30, True, '...', 0) }}</small></p>
+                {% endfor %}
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

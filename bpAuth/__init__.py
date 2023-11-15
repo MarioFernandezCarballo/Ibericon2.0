@@ -4,7 +4,7 @@ from flask import Blueprint, make_response, redirect, url_for, request, flash, r
 from flask_jwt_extended import create_access_token, JWTManager, set_access_cookies, unset_jwt_cookies
 from flask_login import LoginManager, login_user, login_required, logout_user
 
-from utils.user import userLogin, userSignup, getUserOnly
+from utils.auth import userLogin, userSignup, getUserOnly
 
 
 authBP = APIBlueprint('authBluePrint', __name__)

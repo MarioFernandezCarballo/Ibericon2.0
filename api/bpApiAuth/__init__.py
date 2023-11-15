@@ -10,7 +10,7 @@ from flask_login import LoginManager, login_required
 # Import custom modules
 from .queries import Queries
 from .responses import Responses
-from .utils import userSignup, checkBCPUser, userLogin, setUserInfo, getUserOnly, resetUserInfo
+from .utils import userSignupApi, userLoginApi, getUserOnlyApi, resetUserInfoApi
 
 
 # Create an APIBlueprint object for authentication-related routes
@@ -25,7 +25,7 @@ jwt = JWTManager()
 # Function to load a user based on their ID (used by LoginManager)
 @loginManager.user_loader
 def loadUser(user_id):
-    return getUserOnly(user_id)
+    return getUserOnlyApi(user_id)
 
 
 # Function to handle expired JWT tokens and redirect the user to the login page
@@ -45,7 +45,7 @@ def refreshToken(jwt_header, jwt_data):
                 })
 def signupApiEndPoint(query: Queries.SignUp):
     # Process the user registration request
-    response = userSignup(current_app.config['database'], query)
+    response = userSignupApi(current_app.config['database'], query)
     return response
 
 
@@ -58,7 +58,7 @@ def signupApiEndPoint(query: Queries.SignUp):
                 })
 def loginApiEndPoint(query: Queries.Login):
     # Process the user login request
-    response = userLogin(query)
+    response = userLoginApi(query)
     return response
 
 
@@ -72,5 +72,5 @@ def loginApiEndPoint(query: Queries.Login):
 @login_required
 def logoutApiEndPoint():
     # Process the logout request
-    response = resetUserInfo()
+    response = resetUserInfoApi()
     return response

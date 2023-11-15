@@ -7,3 +7,4 @@ from utils.club import *
 from utils.tournament import *
 from utils.user import *
 from utils.general import *
+from utils.conference import *

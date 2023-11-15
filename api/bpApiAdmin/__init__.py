@@ -9,7 +9,7 @@ from utils.decorators import only_left_hand, only_collaborator
 
 from .queries import Queries
 from .responses import Responses
-from .utils import setPlayerPermission, updateAlgorithm, updateStats, addNewTournament, deleteTournament
+from .utils import setPlayerPermissionApi, updateAlgorithmApi, updateStatsApi, newTournamentApi, deleteTournamentApi
 
 
 adminApiBP = APIBlueprint('adminApiBluePrint', __name__, url_prefix='/api/admin')
@@ -35,7 +35,7 @@ limiter = Limiter(key_func=lambda: 'global')
 @login_required
 @only_left_hand
 def changePlayerPermissionsApiEndPoint(query: Queries.Permission):
-    response = setPlayerPermission(current_app.config["database"], query.bcpId, query.newPermission)
+    response = setPlayerPermissionApi(current_app.config["database"], query.bcpId, query.newPermission)
     return response
 
 
@@ -48,7 +48,7 @@ def changePlayerPermissionsApiEndPoint(query: Queries.Permission):
 @login_required
 @only_collaborator
 def addNewTournamentApiEndPoint(query: Queries.AddTournament):
-    response = addNewTournament(current_app.config['database'], query)
+    response = newTournamentApi(query)
     return response
 
 
@@ -61,7 +61,7 @@ def addNewTournamentApiEndPoint(query: Queries.AddTournament):
 @login_required
 @only_collaborator
 def deleteTournamentApiEndPoint(query: Queries.DeleteTournament):
-    result = deleteTournament(query)
+    result = deleteTournamentApi(query)
     return result
 
 
@@ -71,7 +71,7 @@ def deleteTournamentApiEndPoint(query: Queries.DeleteTournament):
                  responses={
                      200: Responses.BaseResponse,
                  },
-                 doc_ui=False)  # TODO cambiar esto en github que apunte a donde tiene que hacerlo
+                 doc_ui=False)
 def webhookApi():
     try:
         with limiter.limit("1/hour"):
@@ -99,7 +99,7 @@ def webhookApi():
 def updateAlgorithmApiEndPoint():
     try:
         with limiter.limit("1/hour"):
-            result = updateAlgorithm()
+            result = updateAlgorithmApi()
             return result
     except RateLimitExceeded:
         return jsonify({
@@ -119,7 +119,7 @@ def updateAlgorithmApiEndPoint():
 def updateStatsApiEndPoint():
     try:
         with limiter.limit("1/hour"):
-            result = updateStats()
+            result = updateStatsApi()
             return result
     except RateLimitExceeded:
         return jsonify({

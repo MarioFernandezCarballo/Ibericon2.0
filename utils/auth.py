@@ -1,29 +1,24 @@
-# This code handles user authentication and registration in a Flask web application.
-# It provides functions for user registration, BCP credentials verification, user login,
-# setting authentication cookies, and user logout.
-
 import requests
 import json
+
 from datetime import timedelta
 
-from flask import current_app, jsonify
-from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies
+from flask import redirect, url_for, flash, current_app, jsonify
 from flask_login import login_user, logout_user
-
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask_jwt_extended import set_access_cookies, create_access_token, unset_jwt_cookies
 
 from database import User, City
+from werkzeug.security import check_password_hash, generate_password_hash
 
 
-# Function to register a user
-def userSignup(database, form):
+def userSignup(form):
     # Verify the user's credentials in an external service (BCP)
     status, data = checkBCPUser(form)
     if status == 200:
         # Hash the user's password
-        hashed_password = generate_password_hash(form.password, method='scrypt')
+        hashed_password = generate_password_hash(form['password'], method='scrypt')
         user = User.query.filter_by(bcpId=data['id']).first()
-        city = City.query.filter_by(name=form.city).first()
+        city = City.query.filter_by(name=form['city']).first()
         if user:
             if not user.registered:
                 # Update user data if the user already exists but is not registered
@@ -32,9 +27,10 @@ def userSignup(database, form):
                 user.registered = True
                 user.conference = city.conference.id
                 user.city = city.id
-                database.session.commit()
+                current_app.config['database'].session.commit()
                 # Create a response with user information and set cookies
-                response = jsonify({
+                response = redirect(url_for('dashboard'))
+                responseApi = jsonify({
                     "status": 200,
                     "message": "Registration successful",
                     "data": {
@@ -45,27 +41,38 @@ def userSignup(database, form):
                         "city": city.name
                     }
                 })
-                return setUserInfo(response, user)
-            return jsonify({
+                return setUserInfo(response, user), setUserInfo(responseApi, user)
+            flash("User already registered")
+            return redirect(url_for('signup')), jsonify({
                 "status": 401,
                 "message": "User already registered",
                 "data": {}
             })
-        bcpId = data['id']
+        uri = current_app.config["BCP_API_USER_DETAIL"].replace("####userId####", data['id'])
+        response = requests.get(uri, headers=current_app.config["BCP_API_HEADERS"])
+        users = json.loads(response.text)
+        imgUrl = current_app.config["IMAGE_DEFAULT"]
+        if 'profileFileId' in users.keys():
+            uri = current_app.config["BCP_API_USER_IMG"].replace("####img####", users['profileFileId'])
+            response = requests.get(uri, headers=current_app.config["BCP_API_HEADERS"])
+            img = json.loads(response.text)
+            imgUrl = img['url']
         new_user = User(
-            bcpId=bcpId,
+            bcpId=data['id'],
             bcpMail=data['email'],
             password=hashed_password,
             bcpName=data['firstName'] + " " + data['lastName'],
             permissions=0,
+            profilePic=imgUrl,
             city=city.id,
             conference=city.conference.id,
             registered=True
         )
-        database.session.add(new_user)
-        database.session.commit()
+        current_app.config['database'].session.add(new_user)
+        current_app.config['database'].session.commit()
         # Create a response with user information and set cookies
-        response = jsonify({
+        response = redirect(url_for('dashboard'))
+        responseApi = jsonify({
             "status": 200,
             "message": "Registration successful",
             "data": {
@@ -76,25 +83,25 @@ def userSignup(database, form):
                 "city": city.name
             }
         })
-        return setUserInfo(response, new_user)
-    return jsonify({
+        return setUserInfo(response, new_user), setUserInfo(responseApi, new_user)
+    flash("Your BCP credentials are incorrect")
+    return redirect(url_for('signup')), jsonify({
         "status": 401,
         "message": "Your BCP credentials are incorrect",
         "data": {}
     })
 
 
-# Function to verify the user's credentials in an external service (BCP)
 def checkBCPUser(form):
     headers = current_app.config['BCP_API_HEADERS']
     r = requests.post('https://prod-api.bestcoastpairings.com/users/signin',
-                      json={"username": form.mail, "password": form.password},
+                      json={"username": form['email'], "password": form['password']},
                       headers=headers)
     if r.status_code == 200:
         tokens = json.loads(r.text)
         headers['Identity'] = tokens['idToken']
         headers['Authorization'] = 'Bearer ' + tokens['accessToken']
-        r = requests.get('https://prod-api.bestcoastpairings.com/users/' + form.mail,
+        r = requests.get('https://prod-api.bestcoastpairings.com/users/' + form['email'],
                          headers=headers)
         if r.status_code == 200:
             userData = json.loads(r.text)
@@ -102,14 +109,14 @@ def checkBCPUser(form):
     return r.status_code, {}
 
 
-# Function for a user to log in
 def userLogin(form):
-    user = User.query.filter_by(bcpMail=form.mail).first()
+    user = User.query.filter_by(bcpMail=form['email']).first()
     if user:
-        if check_password_hash(user.password, form.password):
+        if check_password_hash(user.password, form['password']):
             city = City.query.filter_by(id=user.city).first()
             # Create a response with user information and set cookies
-            response = jsonify({
+            response = redirect(url_for('dashboard'))
+            responseApi = jsonify({
                 "status": 200,
                 "message": "Login successful",
                 "data": {
@@ -120,36 +127,33 @@ def userLogin(form):
                     "city": city.name if city else None
                 }
             })
-            return setUserInfo(response, user)
-    return jsonify({
+            return setUserInfo(response, user), setUserInfo(responseApi, user)
+    flash("Could not verify")
+    return redirect(url_for('login')), jsonify({
         "status": 401,
         "message": "Could not verify",
         "data": {}
     })
 
 
-# Function to set user information and cookies after login
 def setUserInfo(response, user):
     set_access_cookies(response, create_access_token(identity=user.bcpId, expires_delta=timedelta(days=365)))
-    response.set_cookie("preferred_update", "1")
-    response.set_cookie("preferred_gameType", "1")
-    response.set_cookie("preferred_language", "en")
     login_user(user)
     return response
 
 
-# Function to get user information by their ID
-def getUserOnly(pl):
-    return User.query.filter_by(id=pl).first()
-
-
-# Function to log out a user
 def resetUserInfo():
-    response = jsonify({
+    response = redirect(url_for('dashboard'))
+    responseApi = jsonify({
         "status": 200,
         "message": "Logout successful",
         "data": {}
     })
     logout_user()
     unset_jwt_cookies(response)
-    return response
+    unset_jwt_cookies(responseApi)
+    return response, responseApi
+
+
+def getUserOnly(pl):
+    return User.query.filter_by(id=pl).first()

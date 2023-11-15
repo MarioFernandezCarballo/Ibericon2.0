@@ -5,8 +5,8 @@ import os
 from werkzeug.security import generate_password_hash
 
 from database import db, User, Conference, City
-from bpApiAuth import loginManager, jwt
-from bpApiAdmin import limiter
+from api.bpApiAuth import loginManager, jwt
+from api.bpApiAdmin import limiter
 
 
 def createApp(app):
@@ -16,6 +16,7 @@ def createApp(app):
     app.config["SECRET_KEY"] = handleSecretKey(config)
     app.config['PORT'] = config['port']
     app.config['HOST'] = config['host']
+    app.config['DEBUG'] = config['debug']
 
     app.config["JWT_SECRET_KEY"] = handleSecretKey(config)
     app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
@@ -23,11 +24,23 @@ def createApp(app):
     app.config["SQLALCHEMY_DATABASE_URI"] = config['db-uri']
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+    app.config["IMAGE_BB_KEY"] = config['image-bb-key']
+    app.config["IMAGE_BB_UPLOAD"] = config['image-bb-upload']
+    app.config["IMAGE_DEFAULT"] = config['image-default']
+
     app.config["BCP_API_EVENT"] = config['api-event-uri']
+    app.config["BCP_API_EVENT_NEW"] = config['api-event-uri-new']
+    app.config["BCP_API_EVENT_SEARCH"] = config['api-event-search']
+    app.config["BCP_API_EVENT_CHECK"] = config['api-event-check']
+
     app.config["BCP_API_USER"] = config['api-user-uri']
+    app.config["BCP_API_USER_DETAIL"] = config['api-user-detail']
+    app.config["BCP_API_USER_IMG"] = config['api-user-img']
     app.config["BCP_API_USERS"] = config['api-users-uri']
+
     app.config["BCP_API_TEAM"] = config['api-team-uri']
     app.config["BCP_API_TEAM_PLACINGS"] = config['api-team-placings-uri']
+    app.config["BCP_API_TEAMS_DETAIL"] = config['api-teams-detail']
     app.config["BCP_API_HEADERS"] = config['api-headers']
 
     app.config["CITIES"] = config["cities"]
@@ -87,8 +100,12 @@ def createAdmin(app):
         bcpId="0000000000",
         bcpMail=app.config["ADMIN_MAIL"],
         bcpName=app.config["ADMIN_USERNAME"],
+        conference=1,
+        city=1,
+        profilePic=app.config["IMAGE_DEFAULT"],
         password=generate_password_hash(app.config["ADMIN_PASSWORD"], method='scrypt'),
-        permissions=15
+        permissions=15,
+        registered = False
     )
     app.config['database'].session.add(new_user)
     app.config['database'].session.commit()
@@ -99,8 +116,11 @@ def createCollaborator(app):
         bcpId="0000000000",
         bcpMail=app.config["COLLAB_MAIL"],
         bcpName=app.config["COLLABORATOR_USERNAME"],
+        conference=1,
+        city=1,
         password=generate_password_hash(app.config["COLLABORATOR_PASSWORD"], method='scrypt'),
-        permissions=13
+        permissions=13,
+        registered = False
     )
     app.config['database'].session.add(new_user)
     app.config['database'].session.commit()

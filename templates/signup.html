@@ -3,8 +3,13 @@
     <div class="login">
         <h2>Registro (Entra primero en BCP)</h2>
         <form class="login-form" action="/signup" method="post">
-            <input placeholder="Email BCP" type="text" name="mail" id="mail">
+            <input placeholder="Email BCP" type="text" name="email" id="email">
             <input placeholder="Contraseña BCP" type="password" name="password" id="password">
+            <select name="city" id="city">
+                {% for city in cities %}
+                    <option value="{{ city.name }}">{{ city.name }}</option>
+                {% endfor %}
+            </select>
             <button type="submit">Resgistrarse</button>
             <a href="/login/only-collaborator">¿Ya tienes cuenta? Entra aquí</a>
         </form>
