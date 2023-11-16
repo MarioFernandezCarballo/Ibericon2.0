@@ -40,7 +40,7 @@
                     <div class="col-md-3 align-self-stretch kt-mr-10">
                       <div class="box-view position-item">
                         <p class="display-6"><i class="icon-piechart"></i></p>
-                        <p class="h4">{{ '%0.2f'| format(usr.winRate) }}%</p>
+                        <p class="h4">{{ '%0.2f'| format(usr.winRate * 100) }}%</p>
                         <p>Winrate</p>
                       </div>
                     </div>
@@ -83,10 +83,10 @@
                     <th><small>Winrate</small></th>
                 </tr>
                 </thead>
-                {% for fct in usr.factions %}
+                {% for fct in ratesFactions %}
                 <tr>
-                    <td><img src="{{ usr.profilePic }}" class="rounded-circle shadow-4 kt-avatar" alt="Avatar" /><small>{{ fct.name | truncate(25, True, '...', 0) }}</small></td>
-                    <td><small>50%</small></td>
+                    <td><img src="{{ usr.profilePic }}" class="rounded-circle shadow-4 kt-avatar" alt="Avatar" /><small>{{ fct.Faction.name | truncate(25, True, '...', 0) }}</small></td>
+                    <td><small>{{ '%0.2f'| format(fct.UserFaction.winRate * 100) }}%</small></td>
                 </tr>
                 {% endfor %}
             </table>

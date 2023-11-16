@@ -59,6 +59,11 @@ def getUserLastFaction(usr):
     return None
 
 
+def getUserFactions(usr):
+    return current_app.config['database'].session.query(Faction, UserFaction).outerjoin(UserFaction, Faction.id == UserFaction.factionId).filter(UserFaction.userId==usr.id).all()
+
+
+
 def getUserByBcpId(user):
     return User.query.filter_by(bcpId=user['userId']).first()
 
@@ -90,4 +95,8 @@ def getUserConferencePosition(usr):
 
 def updateProfile(usr, form):
     usr = User.query.filter_by(id=usr.id)
+    usr.bcpName = form['name']
+    usr.infoMail = form['email']
+    usr.conference = int(form['conference'])
+    current_app.config['database'].session.commmit()
     return usr  # TODO

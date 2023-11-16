@@ -56,14 +56,48 @@ def dashboard():
     usr = getUsers()
     clb = getClubs()
     tour = getAllTournaments()
+    tours = [{
+        "bcpUri": u.Tournament.bcpUri,
+        "name": u.Tournament.name,
+        "date": u.Tournament.date,
+        "rounds": u.Tournament.rounds,
+        "players": len(u.Tournament.users),
+        "conference": u.Conference.name,
+        "imgUri": u.Tournament.imgUri
+    } for u in tour if not u.Tournament.isFinished]
     return render_template(
         'general.html',
         title="General",
         users=usr,
         clubs=clb,
-        tournaments=tour,
+        tournaments=tours,
         numUsers=len(usr),
         numTour=len(tour),
+        amountGolden=50,  # TODO gestionar esto
+        amountTrips=60,
+        user=current_user if not current_user.is_anonymous else None
+    )
+
+
+@app.route('/about', methods=['GET', 'POST'])
+def about():
+    from flask import render_template
+    from flask_login import current_user
+    from utils import getAllTournaments
+    tors = getAllTournaments()
+    tors = [{
+        "bcpUri": u.Tournament.bcpUri,
+        "name": u.Tournament.name,
+        "date": u.Tournament.date,
+        "rounds": u.Tournament.rounds,
+        "players": len(u.Tournament.users),
+        "conference": u.Conference.name,
+        "imgUri": u.Tournament.imgUri
+    } for u in tors if not u.Tournament.isFinished]
+    return render_template(
+        'about.html',
+        title="About",
+        tournaments=tors,
         user=current_user if not current_user.is_anonymous else None
     )
 
@@ -103,7 +137,7 @@ def profile():
 def position():
     from flask import render_template, request, redirect, url_for
     from flask_login import current_user
-    from utils import getUserConferencePosition, getUserGlobalPosition, getUserOnly, getUserConference, updateProfile, getUserMostPlayedFaction, getUserMostPlayedClub, getUserLastFaction, getPastTournamentsByUser, getFutureTournamentsByUser
+    from utils import getUserConferencePosition, getUserFactions, getUserGlobalPosition, getUserOnly, getUserConference, updateProfile, getUserMostPlayedFaction, getUserMostPlayedClub, getUserLastFaction, getPastTournamentsByUser, getFutureTournamentsByUser
     if request.method == 'POST':
         return updateProfile(current_user, request.form)
     usr = getUserOnly(current_user.id)
@@ -111,6 +145,7 @@ def position():
         conference = getUserConference(usr.conference)
         mostCommon = getUserMostPlayedFaction(usr)
         lastFaction = getUserLastFaction(usr)
+        ratesFactions = getUserFactions(usr)
         club = getUserMostPlayedClub(usr)
         future = getFutureTournamentsByUser(usr)
         past = getPastTournamentsByUser(usr)
@@ -128,6 +163,7 @@ def position():
             past=past,
             globalClass=globalClass,
             conferenceClass=conferenceClass,
+            ratesFactions=ratesFactions,
             user=current_user if not current_user.is_anonymous else None
         )
     return redirect(url_for('dashboard'))
@@ -177,10 +213,19 @@ def getTournaments():
 
 @app.route('/check-tournaments', methods=['GET'])
 @decorators.only_collaborator
-def checkTournaments():
+def checkTournamentsAdmin():
     from flask import redirect, url_for
     from utils.admin import checkTournaments
     checkTournaments()
+    return redirect(url_for('dashboard'))
+
+
+@app.route('/update-stats', methods=['GET'])
+@decorators.only_collaborator
+def updateStatsAdmin():
+    from flask import redirect, url_for
+    from utils.admin import updateStats
+    updateStats()
     return redirect(url_for('dashboard'))
 
 

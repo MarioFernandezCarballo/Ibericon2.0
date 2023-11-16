@@ -19,24 +19,14 @@
       <div class="col-md-3 align-self-stretch">
         <div class="box-view">
           <img class="icon-general" src="../static/stylesheets/img/icon-mony_earn.svg" alt="">
-     
-
-        <!-- <div id="cont">
-            <svg id="svg" width="80px" height="80px" viewPort="0 0 80 80" version="1.1" xmlns="http://www.w3.org/2000/svg">
-            <circle r="90" cx="100" cy="100" fill="transparent" stroke-dasharray="565.48" stroke-dashoffset="0"></circle>
-            <circle id="bar" r="90" cx="100" cy="100" fill="transparent" stroke-dasharray="565.48" stroke-dashoffset="0"></circle>
-            </svg>
-        </div>
-        <input class="d-none" id="percent" name="percent"> -->
-
-          <p class="display-6">768 €</p>
+          <p class="display-6">{{ amountGolden }}€</p>
           <p>Para Golden Tickets</p>
         </div>
       </div>
       <div class="col-md-3 align-self-stretch">
         <div class="box-view">
           <img class="icon-general" src="../static/stylesheets/img/icon_money_travel.svg" alt="">
-          <p class="display-6">25%</p>
+          <p class="display-6">{{ amountTrips }}%</p>
           <p>Para los viajes</p>
         </div>
       </div>
@@ -101,17 +91,15 @@
             </thead>
             <tbody>
             {% for to in tournaments[:5] %}
-              {% if not to.Tournament.isFinished %}
                 <tr onclick="location.href='{{ to.bcpUri }}';">
-                  <td style="width: 70%;"><img src="{{ to.Tournament.imgUri }}" class="rounded-circle shadow-4 kt-avatar"
-                                                 alt="Avatar" /><small>{{ to.Tournament.name | truncate(15, True, '...', 0) }}</small></td>
-                  <td><small>{{ to.Tournament.date }}</small></td>
+                  <td style="width: 70%;"><img src="{{ to.imgUri }}" class="rounded-circle shadow-4 kt-avatar"
+                                                 alt="Avatar" /><small>{{ to.name | truncate(15, True, '...', 0) }}</small></td>
+                  <td><small>{{ to.date }}</small></td>
                 </tr>
-              {% endif %}
             {% endfor %}
             <tbody>
         </table>
-          <a class="type-btn" href="/tournaments"> <i></i>Calendario Anual</a>
+          <a class="type-btn" href="/tournaments"> <i></i>Futuros torneos</a>
         </div>
       </div>
     </div>

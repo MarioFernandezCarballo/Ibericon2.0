@@ -9,6 +9,7 @@ class User(db.Model, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     bcpMail = db.Column(db.String(100))
+    # infoMail = db.Column(db.String(100))  #TODO
     bcpId = db.Column(db.String(30), nullable=False)
     bcpName = db.Column(db.String(100))
     password = db.Column(db.String(200))
@@ -106,7 +107,7 @@ class UserTournament(db.Model):
     performance = db.Column(db.String(400))
 
 
-class UserFaction(db.Model):
+class UserFaction(db.Model):  # TODO añadir total de partidas w, l, t
     __tablename__ = 'userfaction'
     id = db.Column(db.Integer, primary_key=True)
     userId = db.Column(db.Integer, db.ForeignKey('user.id'))
