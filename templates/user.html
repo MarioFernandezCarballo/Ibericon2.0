@@ -1,54 +1,115 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="col-md-8 align-self-stretch">
-    <div class="box-view" style="background-image: url(../static/stylesheets/img/bg-invent-2.png);">
-      <p class="title-box">{{ userOnly.bcpName }} {{ '%0.2f'| format(userOnly.ibericonScore) }}</p>
-      <table class="fl-table">
-        <thead>
-        <tr>
-            <th>Torneo</th>
-            <th>Posición</th>
-            <th>Facción</th>
-            <th>Equipo</th>
-            <th>Puntuación</th>
-        </tr>
-        </thead>
-        <tbody>
-            {% for usrTor in usr %}
-            {% for tor in userOnly.tournaments %}
-                {% if usrTor.UserTournament.tournamentId == tor.id %}
-                    <tr onclick="window.open('{{ tor.bcpUri }}', '_blank');">
-                        <td style="width: 40%;">{{ tor.name | truncate(20, True, '...', 0) }}</td>
-                        <td>{{ usrTor.UserTournament.position }}</td>
-                        {% if usrTor.UserTournament.factionId is not none %}
-                            {% for fct in userOnly.factions %}
-                                {% if fct.id == usrTor.UserTournament.factionId %}
-                                    <td>{{ fct.name | truncate(15, True, '...', 0) }}</td>
-                                {% endif %}
-                            {% endfor %}
-                        {% else %}
-                            <td>-</td>
-                        {% endif %}
-                        {% if usrTor.UserTournament.teamId is not none %}
-                            {% for te in userOnly.teams %}
-                                {% if te.id == usrTor.UserTournament.teamId %}
-                                    <td>{{ te.name }}</td>
-                                {% endif %}
-                            {% endfor %}
-                        {% else %}
-                            <td>-</td>
-                        {% endif %}
-                        {% if usrTor.UserTournament.countingScore %}
-                            <td style="color: #FFF49B;">{{ '%0.2f'| format(usrTor.UserTournament.ibericonScore) }}</td>
-                        {% else %}
-                            <td>{{ '%0.2f'| format(usrTor.UserTournament.ibericonScore) }}</td>
-                        {% endif %}
+<div class="container">
+    <div class="row mb-4">
+      <div class="col-md-12 align-self-stretch">
+        <div class="box-view box-view-profile" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
+            <div class="position-container">
+              <div class="profile-info margin-right-20">
+                <img src="{{ usr.profilePic }}" class="rounded-circle shadow-4 kt-avatar-position" alt="Avatar" />
+              </div>
+                <div class="profile-info grow-down">
+                    <div>
+                        <p class="h2"><strong>{{ usr.bcpName }}</strong></p>
+                        <p class="h6"><small>Conferencia: </small><strong>{{ conference.name }}</strong></p>
+                        <p class="h6"><small>Equipo: </small><strong>{{ club.name }}</strong></p>
+                        <p class="h6"><small>Facción más jugada: </small><strong>{{ common.name }}</strong></p>
+                        <p class="h6"><small>Última facción jugada: </small><strong>{{ last.name }}</strong></p>
+                    </div>
+                  <div style="margin-top: 15px;" class="position-info">
+                    <div class="col-md-3 align-self-stretch kt-mr-10">
+                      <div class="box-view position-item">
+                          <p class="display-6"><i class="icon-bargraph"></i></p>
+                        <p class="h4">{{ globalClass }}º</p>
+                        <p>Ibericon</p>
+                      </div>
+                    </div>
+                      <div class="col-md-3 align-self-stretch kt-mr-10">
+                      <div class="box-view position-item">
+                          <p class="display-6"><i class="icon-bargraph"></i></p>
+                        <p class="h4">{{ conferenceClass }}º</p>
+                        <p>Conferencia</p>
+                      </div>
+                    </div>
+                    <div class="col-md-3 align-self-stretch kt-mr-10">
+                      <div class="box-view position-item">
+                          <p class="display-6"><i class="icon-trophy"></i></p>
+                        <p class="h4">{{ usr.tournaments|length }}</p>
+                        <p>Torneos</p>
+                      </div>
+                    </div>
+                    <div class="col-md-3 align-self-stretch kt-mr-10">
+                      <div class="box-view position-item">
+                        <p class="display-6"><i class="icon-piechart"></i></p>
+                        <p class="h4">{{ '%0.2f'| format(usr.winRate) }}%</p>
+                        <p>Winrate</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  <div class="row">
+      <div class="col-md-4 align-self-stretch">
+        <div class="box-view" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
+          <p class="title-box">Torneos jugados</p>
+            <table class="fl-table">
+                <thead>
+                <tr>
+                    <th><small>Nombre</small></th>
+                    <th><small>Posición</small></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for tor in past %}
+                    <tr onclick="location.href='{{ tor.tournament.bcpUri }}';">
+                      <td style="width: 70%;"><img src="{{ tor.tournament.imgUri }}" class="rounded-circle shadow-4 kt-avatar"
+                                                     alt="Avatar" /><small>{{ tor.tournament.name | truncate(25, True, '...', 0) }}</small></td>
+                      <td><small>{{ tor.userTournament.position }}</small></td>
                     </tr>
-                {% endif %}
-            {% endfor %}
-        {% endfor %}
-                </tbody>
-    </table>
+                {% endfor %}
+                <tbody>
+            </table>
+        </div>
+      </div>
+      <div class="col-md-4 align-self-stretch">
+        <div class="box-view" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
+          <p class="title-box">Facciones</p>
+            <table class="fl-table">
+                <thead>
+                <tr>
+                    <th><small>Nombre</small></th>
+                    <th><small>Winrate</small></th>
+                </tr>
+                </thead>
+                {% for fct in ratesFactions %}
+                <tr onclick="location.href='/faction/{{ fct.Faction.id }}';">
+                    <td><small>{{ fct.Faction.name | truncate(25, True, '...', 0) }}</small></td>
+                    <td><small>{{ '%0.2f'| format(fct.UserFaction.winRate) }}%</small></td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+      </div>
+      <div class="col-md-4 align-self-stretch">
+        <div class="box-view" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
+          <p class="title-box">Próximos torneos</p>
+            <table class="fl-table">
+                <thead>
+                <tr>
+                    <th><small>Nombre</small></th>
+                </tr>
+                </thead>
+                {% for tor in future %}
+                <tr>
+                    <td><img src="{{ tor.imgUri }}" class="rounded-circle shadow-4 kt-avatar" alt="Avatar" /><small>{{ tor.name | truncate(30, True, '...', 0) }}</small></td>
+                </tr>
+                    {% endfor %}
+            </table>
+        </div>
+      </div>
     </div>
   </div>
 {% endblock %}

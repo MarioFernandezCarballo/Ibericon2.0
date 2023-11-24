@@ -1,12 +1,60 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h2 class="link-h2">{{ fctOnly.name }}</h2>
-    <div class="table-wrapper">
+    <div class="row mb-4">
+      <div class="col-md-12 align-self-stretch">
+        <div class="box-view box-view-profile" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
+            <div class="position-container">
+              <div class="profile-info margin-right-20">
+              </div>
+                <div class="profile-info grow-down">
+                    <div style="text-align: center;">
+                        <p class="h2"><strong>{{ fctOnly.name }}</strong></p>
+                    </div>
+                  <div style="margin-top: 15px;" class="position-info">
+                      <div class="col-md-3 align-self-stretch kt-mr-10">
+                      <div class="box-view position-item">
+                          <p class="display-6"><i class="icon-bargraph"></i></p>
+                        <p class="h4">{{ '%0.2f'| format(fctOnly.winRate) }}</p>
+                        <p>Winrate</p>
+                      </div>
+                    </div>
+                    <div class="col-md-3 align-self-stretch kt-mr-10">
+                      <div class="box-view position-item">
+                          <p class="display-6"><i class="icon-piechart"></i></p>
+                        <p class="h4">{{ '%0.2f'| format(fctOnly.pickRate) }}</p>
+                        <p>Pickrate</p>
+                      </div>
+                    </div>
+                      <div class="col-md-3 align-self-stretch kt-mr-10">
+                      <div class="box-view position-item">
+                          <p class="display-6"><i class="icon-profile-male"></i></p>
+                        <p class="h4">{{ fctOnly.users|length }}</p>
+                        <p>Jugadores</p>
+                      </div>
+                    </div>
+                    <div class="col-md-3 align-self-stretch kt-mr-10">
+                      <div class="box-view position-item">
+                          <p class="display-6"><i class="icon-trophy"></i></p>
+                        <p class="h4">{{ fctOnly.tournaments|length }}</p>
+                        <p>Torneos</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12 align-self-stretch">
+        <div class="box-view" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
+            <p class="title-box">Ranking</p>
+
         <table class="fl-table">
             <thead>
             <tr>
-                <th>Nombre</th>
-                <th>Posición</th>
+                <th style="width: 50%;">Nombre</th>
+                <th style="width: 20%;">Posición</th>
                 <th>Puntuación</th>
             </tr>
             </thead>
@@ -24,5 +72,8 @@
             {% endfor %}
             <tbody>
         </table>
+
+      </div>
+    </div>
     </div>
 {% endblock %}

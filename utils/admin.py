@@ -57,6 +57,27 @@ def setPlayerPermission(database, userId, level, fromApi=False):
     return 200
 
 
+def setTeamLeader(database, userId, teamId, fromApi=False):
+    club = Club.query.filter_by(bcpId=teamId).first()
+    usr = User.query.filter_by(bcpId=userId).first()
+    oldLeader = User.query.filter_by(id=club.leader).first()
+    club.leader = usr.id
+    usr.permissions = 4 if usr.permissions < 4 else usr.permissions
+    database.session.commit()
+    if fromApi:
+        return jsonify({
+            "status": 200,
+            "message": "Ok",
+            "data": {
+                "id": usr.bcpId,
+                "name": usr.bcpName,
+                "permission": usr.permissions,
+                "oldLeader": oldLeader
+            }
+        })
+    return 200
+
+
 def algorithm(tor, user):
     performance = [0, 0, 0]
     playerModifier = 1 + len(tor.users) / 100
@@ -75,20 +96,25 @@ def newTournament(tor, finished=False):
     response = requests.get(uri, headers=current_app.config["BCP_API_HEADERS"])
     users = json.loads(response.text)
     tor = manageTournament(tor)
-    if tor.isTeam:
-        # manageTeams(tor)
-        manageUsers(tor, users)
-    else:
-        manageUsers(tor, users)
-    if finished:
-        result = updateStats(tor)
-        return Tournament.query.filter_by(id=tor.id).first(), result.status_code
-    return Tournament.query.filter_by(id=tor.id).first(), 200
+    if tor:
+        if tor.isTeam:
+            # manageTeams(tor)
+            manageUsers(tor, users)
+        else:
+            manageUsers(tor, users)
+        if finished:
+            result = updateStats()
+            return Tournament.query.filter_by(id=tor.id).first(), result.status_code
+        return Tournament.query.filter_by(id=tor.id).first(), 200
+    return tor, 400
 
 
 def manageTournament(info):
     isTeamTournament = info['teamEvent']
-    city = City.query.filter_by(name=current_app.config["CITIES"][info['zip'][0:2]]).first()
+    try:
+        city = City.query.filter_by(name=current_app.config["CITIES"][info['zip'][0:2]]).first()
+    except KeyError:
+        return None
     current_app.config['database'].session.add(Tournament(
         bcpId=info['id'],
         bcpUri="https://www.bestcoastpairings.com/event/" + info['id'],
@@ -191,7 +217,10 @@ def addClubFromTournament(te, tor):
             response = requests.post(current_app.config['IMAGE_BB_UPLOAD'],
                                      params={'key': current_app.config['IMAGE_BB_KEY']},
                                      data={'image': img})
-            imgUrl = json.loads(response.text)['data']['url']
+            try:
+                imgUrl = json.loads(response.text)['data']['url']
+            except KeyError:
+                pass
         if not Club.query.filter_by(bcpId=te['teamId']).first():
             current_app.config['database'].session.add(Club(
                 bcpId=te['teamId'],
@@ -217,132 +246,92 @@ def addTeamFromTournament(te, tor):
     return Team.query.filter_by(bcpId=teId).first()
 
 
-def updateStats(tor=None):
-    if tor:
-        for usr in tor.users:
-            best = current_app.config['database'].session.query(UserTournament, Tournament).order_by(desc(UserTournament.ibericonScore)).filter(
-                UserTournament.userId == usr.id).join(Tournament, Tournament.id == UserTournament.tournamentId).all()
-            score = 0
-            counter = 0
-            won = 0
-            tied = 0
-            lost = 0
-            for to in best:
-                to.UserTournament.countingScore = False
-                if counter < 5:
-                    score += to.UserTournament.ibericonScore
-                    to.UserTournament.countingScore = True
-                    counter += 1
-                won += to.UserTournament.won
-                tied += to.UserTournament.tied
-                lost += to.UserTournament.lost
-            usr.ibericonScore = score
+def updateStats():
+    for usr in User.query.all():
+        # User Faction Rates
+        for fct in usr.factions:
+            tournaments = UserTournament.query.filter_by(userId=usr.id).filter_by(factionId=fct.id).all()
+            usrFct = UserFaction.query.filter_by(userId=usr.id).filter_by(factionId=fct.id).first()
+            for to in tournaments:
+                if to.position:
+                    usrFct.won += to.won
+                    usrFct.tied += to.tied
+                    usrFct.lost += to.lost
             try:
-                usr.winRate = won / (won + tied + lost)
+                usrFct.winRate = 100*usrFct.won / (usrFct.won + usrFct.tied + usrFct.lost)
             except ZeroDivisionError:
-                usr.winRate = 0
-            for usrFct in UserFaction.query.filter_by(userId=usr.id).all():
-                score = 0
-                count = 0
-                for t in best:
-                    if t.UserTournament.factionId == usrFct.factionId:
-                        count += 1
-                        score += t.UserTournament.ibericonScore
-                    if count == 4:
-                        break
-                usrFct.ibericonScore = score
-            for usrCl in UserClub.query.filter_by(userId=usr.id).all():
-                score = 0
-                count = 0
-                for t in best:
-                    if t.UserTournament.clubId == usrCl.clubId:
-                        count += 1
-                        score += t.UserTournament.ibericonScore
-                    if count == 3:
-                        break
-                usrCl.ibericonScore = score
-        for tm in tor.teams:
-            best = current_app.config['database'].session.query(UserTournament, Tournament).order_by(desc(UserTournament.ibericonScore)).filter(
-                UserTournament.teamId == tm.id).join(Tournament, Tournament.id == UserTournament.tournamentId).all()
-            tm.ibericonScore = sum([t.UserTournament.ibericonTeamScore for t in best[:4]]) / 3  # Team Players
-        for cl in Club.query.all():
-            clubScore = []
-            for player in UserClub.query.filter_by(clubId=cl.id).all():
-                for best in current_app.config['database'].session.query(UserTournament).order_by(desc(UserTournament.ibericonScore)).filter(UserTournament.userId == player.userId).limit(3).all():
-                    clubScore.append(best.ibericonScore)
-            clubScore.sort(reverse=True)
-            cl.ibericonScore = sum(clubScore[:10])
-    else:
-        for usr in User.query.all():
-            # Faction Rates
-            for fct in usr.factions:
-                w = t = l = 0
-                tournaments = UserTournament.query.filter_by(userId=usr.id).filter_by(factionId=fct.id).all()
-                usrFct = UserFaction.query.filter_by(userId=usr.id).filter_by(factionId=fct.id).first()
-                for to in tournaments:
-                    if to.position:
-                        w += to.won
-                        t += to.tied
-                        l += to.lost
-                try:
-                    usrFct.winRate = w / (w + t + l)
-                except ZeroDivisionError:
-                    usrFct.winRate = 0.0
+                usrFct.winRate = 0.0
 
 
-            best = current_app.config['database'].session.query(UserTournament, Tournament).order_by(desc(UserTournament.ibericonScore)).filter(
-                UserTournament.userId == usr.id).join(Tournament, Tournament.id == UserTournament.tournamentId).all()
+        best = current_app.config['database'].session.query(UserTournament, Tournament).order_by(desc(UserTournament.ibericonScore)).filter(
+            UserTournament.userId == usr.id).join(Tournament, Tournament.id == UserTournament.tournamentId).all()
+        score = 0
+        counter = 0
+        won = 0
+        tied = 0
+        lost = 0
+        for to in best:
+            to.UserTournament.countingScore = False
+            if counter < 5:
+                score += to.UserTournament.ibericonScore
+                to.UserTournament.countingScore = True
+                counter += 1
+            won += to.UserTournament.won
+            tied += to.UserTournament.tied
+            lost += to.UserTournament.lost
+        usr.ibericonScore = score
+        try:
+            usr.winRate =100 * won / (won + tied + lost)
+        except ZeroDivisionError:
+            usr.winRate = 0
+        for usrFct in UserFaction.query.filter_by(userId=usr.id).all():
             score = 0
-            counter = 0
-            won = 0
-            tied = 0
-            lost = 0
-            for to in best:
-                to.UserTournament.countingScore = False
-                if counter < 5:
-                    score += to.UserTournament.ibericonScore
-                    to.UserTournament.countingScore = True
-                    counter += 1
-                won += to.UserTournament.won
-                tied += to.UserTournament.tied
-                lost += to.UserTournament.lost
-            usr.ibericonScore = score
-            try:
-                usr.winRate = won / (won + tied + lost)
-            except ZeroDivisionError:
-                usr.winRate = 0
-            for usrFct in UserFaction.query.filter_by(userId=usr.id).all():
-                score = 0
-                count = 0
-                for t in best:
-                    if t.UserTournament.factionId == usrFct.factionId:
-                        count += 1
-                        score += t.UserTournament.ibericonScore
-                    if count == 4:
-                        break
-                usrFct.ibericonScore = score
-            for usrCl in UserClub.query.filter_by(userId=usr.id).all():
-                score = 0
-                count = 0
-                for t in best:
-                    if t.UserTournament.clubId == usrCl.clubId:
-                        count += 1
-                        score += t.UserTournament.ibericonScore
-                    if count == 3:
-                        break
-                usrCl.ibericonScore = score
-        for tm in Team.query.all():
-            best = current_app.config['database'].session.query(UserTournament, Tournament).order_by(desc(UserTournament.ibericonTeamScore)).filter(
-                UserTournament.teamId == tm.id).join(Tournament, Tournament.id == UserTournament.tournamentId).all()
-            tm.ibericonScore = sum([t.UserTournament.ibericonTeamScore for t in best[:4]]) / 3  # Team Players
-        for cl in Club.query.all():
-            clubScore = []
-            for player in UserClub.query.filter_by(clubId=cl.id).all():
-                for best in current_app.config['database'].session.query(UserTournament).order_by(desc(UserTournament.ibericonScore)).filter(
-                        UserTournament.userId == player.userId).limit(3).all():
-                    clubScore.append(best.ibericonScore)
-            clubScore.sort(reverse=True)
-            cl.ibericonScore = sum(clubScore[:10])
+            count = 0
+            for t in best:
+                if t.UserTournament.factionId == usrFct.factionId:
+                    count += 1
+                    score += t.UserTournament.ibericonScore
+                if count == 4:
+                    break
+            usrFct.ibericonScore = score
+        for usrCl in UserClub.query.filter_by(userId=usr.id).all():
+            score = 0
+            count = 0
+            for t in best:
+                if t.UserTournament.clubId == usrCl.clubId:
+                    count += 1
+                    score += t.UserTournament.ibericonScore
+                if count == 3:
+                    break
+            usrCl.ibericonScore = score
+    for tm in Team.query.all():
+        best = current_app.config['database'].session.query(UserTournament, Tournament).order_by(desc(UserTournament.ibericonTeamScore)).filter(
+            UserTournament.teamId == tm.id).join(Tournament, Tournament.id == UserTournament.tournamentId).all()
+        tm.ibericonScore = sum([t.UserTournament.ibericonTeamScore for t in best[:4]]) / 3  # Team Players
+    for cl in Club.query.all():
+        clubScore = []
+        for player in UserClub.query.filter_by(clubId=cl.id).all():
+            for best in current_app.config['database'].session.query(UserTournament).order_by(desc(UserTournament.ibericonScore)).filter(
+                    UserTournament.userId == player.userId).limit(3).all():
+                clubScore.append(best.ibericonScore)
+        clubScore.sort(reverse=True)
+        cl.ibericonScore = sum(clubScore[:10])
+    # Faction Rates
+    totalPicks = sum([t.totalPlayers for t in Tournament.query.filter_by(isFinished=True).all()])
+    for fct in Faction.query.all():
+        totalFactionPicks = UserTournament.query.filter_by(factionId=fct.id).all()
+        try:
+            fct.pickRate = 100 * len(totalFactionPicks) / totalPicks
+        except ZeroDivisionError:
+            fct.pickRate = 0
+        for uf in totalFactionPicks:
+            fct.won += uf.won
+            fct.tied += uf.tied
+            fct.lost += uf.lost
+        try:
+            fct.winRate = 100* fct.won / (fct.won + fct.tied + fct.lost)
+        except ZeroDivisionError:
+            fct.winRate = 0
     current_app.config['database'].session.commit()
     return jsonify({
         "status": 200,
@@ -362,7 +351,7 @@ def updateAlgorithm():
             usrTor.performance = json.dumps(user['total_games'])
             usrTor.ibericonScore = algorithm(tor, user)
             current_app.config['database'].session.commit()
-        _ = updateStats(tor)
+        _ = updateStats()
     return jsonify({
         "status": 200,
         "message": "Ok"

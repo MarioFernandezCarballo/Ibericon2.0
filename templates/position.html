@@ -10,11 +10,13 @@
                 <a href="/profile" class="type-btn mt-4">Actualizar perfil</a>
               </div>
                 <div class="profile-info grow-down">
-                    <p class="h2"><strong>{{ usr.bcpName }}</strong></p>
-                    <p class="h6"><small>Conferencia: </small><strong>{{ conference.name }}</strong></p>
-                    <p class="h6"><small>Equipo: </small><strong>{{ club.name }}</strong></p>
-                    <p class="h6"><small>Facción más jugada: </small><strong>{{ common.name }}</strong></p>
-                    <p class="h6"><small>Última facción jugada: </small><strong>{{ last.name }}</strong></p>
+                    <div>
+                        <p class="h2"><strong>{{ usr.bcpName }}</strong></p>
+                        <p class="h6"><small>Conferencia: </small><strong>{{ conference.name }}</strong></p>
+                        <p class="h6"><small>Equipo: </small><strong>{{ club.name }}</strong></p>
+                        <p class="h6"><small>Facción más jugada: </small><strong>{{ common.name }}</strong></p>
+                        <p class="h6"><small>Última facción jugada: </small><strong>{{ last.name }}</strong></p>
+                    </div>
                   <div style="margin-top: 15px;" class="position-info">
                     <div class="col-md-3 align-self-stretch kt-mr-10">
                       <div class="box-view position-item">
@@ -40,7 +42,7 @@
                     <div class="col-md-3 align-self-stretch kt-mr-10">
                       <div class="box-view position-item">
                         <p class="display-6"><i class="icon-piechart"></i></p>
-                        <p class="h4">{{ '%0.2f'| format(usr.winRate * 100) }}%</p>
+                        <p class="h4">{{ '%0.2f'| format(usr.winRate) }}%</p>
                         <p>Winrate</p>
                       </div>
                     </div>
@@ -65,7 +67,7 @@
                 {% for tor in past %}
                     <tr onclick="location.href='{{ tor.tournament.bcpUri }}';">
                       <td style="width: 70%;"><img src="{{ tor.tournament.imgUri }}" class="rounded-circle shadow-4 kt-avatar"
-                                                     alt="Avatar" /><small>{{ tor.tournament.name | truncate(15, True, '...', 0) }}</small></td>
+                                                     alt="Avatar" /><small>{{ tor.tournament.name | truncate(25, True, '...', 0) }}</small></td>
                       <td><small>{{ tor.userTournament.position }}</small></td>
                     </tr>
                 {% endfor %}
@@ -85,8 +87,8 @@
                 </thead>
                 {% for fct in ratesFactions %}
                 <tr>
-                    <td><img src="{{ usr.profilePic }}" class="rounded-circle shadow-4 kt-avatar" alt="Avatar" /><small>{{ fct.Faction.name | truncate(25, True, '...', 0) }}</small></td>
-                    <td><small>{{ '%0.2f'| format(fct.UserFaction.winRate * 100) }}%</small></td>
+                    <td><small>{{ fct.Faction.name | truncate(25, True, '...', 0) }}</small></td>
+                    <td><small>{{ '%0.2f'| format(fct.UserFaction.winRate) }}%</small></td>
                 </tr>
                 {% endfor %}
             </table>

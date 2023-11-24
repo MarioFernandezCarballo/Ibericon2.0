@@ -5,19 +5,23 @@ from flask import current_app, jsonify
 from sqlalchemy import desc
 
 from database import User, Conference, Tournament, UserTournament, Faction, Team, Club, UserFaction, UserClub, City
-from utils.admin import setPlayerPermission, algorithm, newTournament, updateStats, updateAlgorithm, deleteTournament
+from utils.admin import setPlayerPermission, algorithm, newTournament, updateStats, updateAlgorithm, deleteTournament, setTeamLeader
 
 def setPlayerPermissionApi(database, userId, level):
     return setPlayerPermission(database, userId, level, fromApi=True)
+
+
+def setTeamLeaderApi(database, userId, teamId):
+    return setTeamLeader(database, userId, teamId, fromApi=True)
 
 
 def algorithmApi(tor, user):
     return algorithm(tor, user)
 
 
-def newTournamentApi(form):
-    if "https://www.bestcoastpairings.com/event/" in form.uri:
-        eventId = form.uri.split("/")[-1].split("?")[0]
+def newTournamentApi(uri):
+    if "https://www.bestcoastpairings.com/event/" in uri:
+        eventId = uri.split("/")[-1].split("?")[0]
         uri = current_app.config["BCP_API_EVENT"].replace("####event####", eventId)
         response = requests.get(uri, headers=current_app.config["BCP_API_HEADERS"])
         info = json.loads(response.text)
@@ -84,8 +88,8 @@ def newTournamentApi(form):
             })
 
 
-def updateStatsApi(tor=None):
-    return updateStats(tor)
+def updateStatsApi():
+    return updateStats()
 
 
 def updateAlgorithmApi():

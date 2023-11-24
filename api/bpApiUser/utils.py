@@ -1,7 +1,7 @@
 from flask import current_app, jsonify
 from sqlalchemy import desc
 from database import (User, UserTournament, Tournament, City,
-                      Conference, Faction, Team, Club,
+                      Conference, Faction, Club,
                       UserFaction, UserClub)
 
 
@@ -76,7 +76,7 @@ def getUser(query):
                 "id": club.bcpId,
                 "name": club.name,
                 "score": userClub.ibericonScore,
-                "pic": club.profilePic  # TODO volcar imagen aqui
+                "pic": club.profilePic
             })
 
     return jsonify({
@@ -95,7 +95,7 @@ def getUser(query):
                     "name": userBd.City.name
                 },
                 'score': userBd.User.ibericonScore,
-                'profilePic': userBd.User.profilePic,  # TODO volcar imagen aqui
+                'profilePic': userBd.User.profilePic,
                 'isClassified': userBd.User.isClassified,
                 'winRate': userBd.User.winRate,
                 'factions': factions,

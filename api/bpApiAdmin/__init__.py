@@ -9,7 +9,7 @@ from utils.decorators import only_left_hand, only_collaborator
 
 from .queries import Queries
 from .responses import Responses
-from .utils import setPlayerPermissionApi, updateAlgorithmApi, updateStatsApi, newTournamentApi, deleteTournamentApi
+from .utils import setPlayerPermissionApi, updateAlgorithmApi, updateStatsApi, newTournamentApi, deleteTournamentApi, setTeamLeaderApi
 
 
 adminApiBP = APIBlueprint('adminApiBluePrint', __name__, url_prefix='/api/admin')
@@ -39,6 +39,18 @@ def changePlayerPermissionsApiEndPoint(query: Queries.Permission):
     return response
 
 
+@adminApiBP.patch("/team/leader",
+                  summary="Change permissions",
+                  responses={
+                      200: Responses.Permission,
+                  })
+@login_required
+@only_left_hand
+def setTeamLeaderApiEndPoint(query: Queries.TeamLeader):
+    response = setTeamLeaderApi(current_app.config["database"], query.bcpId, query.teamId)
+    return response
+
+
 @adminApiBP.post("tournament/add",
                   summary="Add new tournament manually",
                   description='Add New tournament. This function will soon be deprecated',
@@ -48,7 +60,7 @@ def changePlayerPermissionsApiEndPoint(query: Queries.Permission):
 @login_required
 @only_collaborator
 def addNewTournamentApiEndPoint(query: Queries.AddTournament):
-    response = newTournamentApi(query)
+    response = newTournamentApi(query.uri)
     return response
 
 

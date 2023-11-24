@@ -11,3 +11,7 @@ class Queries:
 
     class DeleteTournament(BaseModel):
         id: str = Field(None, description="Tournament BCP Id")
+
+    class TeamLeader(BaseModel):
+        bcpId: str = Field(None, description="BCP User Id")
+        teamId: str = Field(None, description="BCP Team Id")

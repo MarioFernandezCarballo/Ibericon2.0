@@ -23,6 +23,7 @@ def userSignup(form):
             if not user.registered:
                 # Update user data if the user already exists but is not registered
                 user.bcpMail = data['email']
+                user.infoMail = data['email']
                 user.password = hashed_password
                 user.registered = True
                 user.conference = city.conference.id
@@ -60,6 +61,7 @@ def userSignup(form):
         new_user = User(
             bcpId=data['id'],
             bcpMail=data['email'],
+            infoMail=data['email'],
             password=hashed_password,
             bcpName=data['firstName'] + " " + data['lastName'],
             permissions=0,

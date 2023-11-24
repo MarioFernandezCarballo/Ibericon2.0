@@ -9,7 +9,7 @@ class User(db.Model, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     bcpMail = db.Column(db.String(100))
-    # infoMail = db.Column(db.String(100))  #TODO
+    infoMail = db.Column(db.String(100))
     bcpId = db.Column(db.String(30), nullable=False)
     bcpName = db.Column(db.String(100))
     password = db.Column(db.String(200))
@@ -20,7 +20,7 @@ class User(db.Model, UserMixin):
     profilePic = db.Column(db.String(500))
     conference = db.Column(db.Integer, db.ForeignKey('conference.id'))
     city = db.Column(db.Integer, db.ForeignKey('city.id'))
-    winRate = db.Column(db.Float)
+    winRate = db.Column(db.Float, default=0.0)
     factions = db.relationship('Faction', secondary="userfaction", cascade='all,delete', back_populates='users')
     teams = db.relationship('Team', secondary="userteam", cascade='all,delete', back_populates='users')
     clubs = db.relationship('Club', secondary="userclub", cascade='all,delete', back_populates='users')
@@ -49,6 +49,7 @@ class Club(db.Model):
     conference = db.Column(db.Integer, db.ForeignKey('conference.id'))
     shortName = db.Column(db.String(50))
     ibericonScore = db.Column(db.Float, default=0.0)
+    leader = db.Column(db.Integer, db.ForeignKey('user.id'))
     users = db.relationship('User', secondary="userclub", back_populates='clubs')
     tournaments = db.relationship('Tournament', secondary='usertournament', back_populates='clubs', overlaps="tournaments")
 
@@ -60,6 +61,11 @@ class Faction(db.Model):
     icon = db.Column(db.String(500))
     name = db.Column(db.String(30), nullable=False)
     shortName = db.Column(db.String(30))
+    won = db.Column(db.Integer, default=0)
+    tied = db.Column(db.Integer, default=0)
+    lost = db.Column(db.Integer, default=0)
+    pickRate = db.Column(db.Float, default=0.0)
+    winRate = db.Column(db.Float, default=0.0)
     users = db.relationship('User', secondary="userfaction", back_populates='factions')
     tournaments = db.relationship('Tournament', secondary="usertournament", back_populates='factions', overlaps="tournaments,tournaments")
 
@@ -107,13 +113,16 @@ class UserTournament(db.Model):
     performance = db.Column(db.String(400))
 
 
-class UserFaction(db.Model):  # TODO añadir total de partidas w, l, t
+class UserFaction(db.Model):
     __tablename__ = 'userfaction'
     id = db.Column(db.Integer, primary_key=True)
     userId = db.Column(db.Integer, db.ForeignKey('user.id'))
     factionId = db.Column(db.Integer, db.ForeignKey('faction.id'))
     ibericonScore = db.Column(db.Float, default=0.0)
-    winRate = db.Column(db.Float, default=0.0)  # TODO Futuro
+    winRate = db.Column(db.Float, default=0.0)
+    won = db.Column(db.Integer, default=0)
+    tied = db.Column(db.Integer, default=0)
+    lost = db.Column(db.Integer, default=0)
 
 
 class UserTeam(db.Model):

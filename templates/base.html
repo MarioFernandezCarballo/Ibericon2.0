@@ -19,38 +19,42 @@
   <img class="logo" src="../static/stylesheets/img/logo-ibericon.png" alt="">
   <nav>
     <ul>
-        <li><a href="/"><i class="icon-desktop"></i> Visión global</a></li>
+        <li><a href="/"><i class="icon-desktop"></i> Global</a></li>
         {% if user %}
             <li><a href="/profile"><i class="icon-profile-male"></i> Perfil</a></li>
             <li><a href="/position"><i class="icon-linegraph"></i> Mi posición</a></li>
         {% endif %}
         <li><a href="/tournaments"> <i class="icon-trophy"></i>Torneos</a></li>
-        <li><a href="/ranking"> <i class="icon-bargraph"></i>Ranking Ibericon</a></li>
+        <li><a href="/ranking"> <i class="icon-bargraph"></i>Ranking</a></li>
         <li><a href="/winrates"> <i class="icon-piechart"></i>Win rates</a></li>
     </ul>
   </nav>
     {% if user %}
-        <a href="/logout" id="log-out">Salir</a>
+        <a href="/logout" id="log-out">{{ user.bcpName }} (Salir)</a>
     {% else %}
         <a href="/login" id="log-in">Entrar</a>
     {% endif %}
 </header>
-<button id="openHeder"><i class="fa fa-bars"></i></button>
+<button id="openHeder" onclick="toggleMenu()">
+    <div></div>
+    <div></div>
+    <div></div>
+</button>
 
 <section id="contianerAll">
   <div class="user-actions">
       {% if user %}
-        <p>Hola {{ user.bcpName }}</p>
+        <p>Hola {{ user.bcpName | truncate(30, True, '...', 0) }}</p>
       {% else %}
         <p></p>
       {% endif %}
-    <form action="">
+    <!--<form action="">
       <div class="flex-form">
         <input type="search" placeholder="Buscar">
         <button type="submit"><i></i></button>
       </div>
     </form>
-    
+
     <div class="dropdown alerts">
       <button  type="button" data-bs-toggle="dropdown" aria-expanded="false">
        <img src="../static/stylesheets/img/icon_alerts.svg" alt="">
@@ -60,7 +64,7 @@
         <li><a class="dropdown-item" href="#">Another action</a></li>
         <li><a class="dropdown-item" href="#">Something else here</a></li>
       </ul>
-    </div>
+    </div>-->
 
   </div>
   <div class="interface grow-down">
@@ -113,6 +117,12 @@
 
 
       </script>
+        <script>
+        function toggleMenu() {
+            var menuIcon = document.getElementById('openHeder');
+            menuIcon.classList.toggle('active');
+        }
+    </script>
     </footer>
 </body>
 </html>
