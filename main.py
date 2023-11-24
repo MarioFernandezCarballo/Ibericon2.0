@@ -326,6 +326,15 @@ def collaboratorAdmin():
         title="Espacio de colaborador",
         user=current_user if not current_user.is_anonymous else None
     )
+@app.route('/update_server', methods=['POST'])
+def webhook():
+    import os
+    from flask import request
+    if request.method == 'POST':
+        os.system('bash ib2-command-pull-event.sh')
+        return 'Updated PythonAnywhere successfully', 200
+    else:
+        return 'Wrong event type', 400
 
 # Tournaments
 @app.route("/tournaments", methods={"GET", "POST"})
@@ -333,7 +342,7 @@ def tournamentsEndPoint():
     from flask import render_template
     from flask_login import current_user
     from utils import getAllTournaments
-    tors = getAllTournaments()
+    tournaments = getAllTournaments()
     tors = [{
         "bcpUri": u.Tournament.bcpUri,
         "name": u.Tournament.name,
@@ -342,13 +351,25 @@ def tournamentsEndPoint():
         "players": len(u.Tournament.users),
         "conference": u.Conference.name,
         "imgUri": u.Tournament.imgUri
-    } for u in tors if not u.Tournament.isFinished]
+    } for u in tournaments if not u.Tournament.isFinished]
+    past = [{
+        "bcpUri": u.Tournament.bcpUri,
+        "name": u.Tournament.name,
+        "date": u.Tournament.date,
+        "rounds": u.Tournament.rounds,
+        "players": len(u.Tournament.users),
+        "conference": u.Conference.name,
+        "imgUri": u.Tournament.imgUri
+    } for u in tournaments if u.Tournament.isFinished]
     return render_template(
         'tournaments.html',
         title="Torneos",
         user=current_user if not current_user.is_anonymous else None,
-        tournaments=tors
+        tournaments=tors,
+        past=past
     )
 
 if __name__ == '__main__':
     app.run(host=app.config['HOST'], port=app.config['PORT'], debug=app.config['DEBUG'])
+
+# TODO mysql
