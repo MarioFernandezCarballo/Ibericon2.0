@@ -87,7 +87,7 @@ def winRatesEndPoint():
     usr = getUsersWinRate()
     fct, _ = getFactions()
     usr = [{"id": u.id, "profilePic": u.profilePic, "bcpName": u.bcpName, "winRate": u.winRate} for u in usr if u.winRate]
-    fct = [{"id": f.id, "bcpName": f.name, "winRate": f.winRate, "pickRate": f.pickRate} for f in sorted(fct, key=lambda d: d.winRate, reverse=True) if f.winRate > 0.0]
+    fct = [{"id": f.id, "bcpName": f.name, "winRate": f.winRate, "pickRate": f.pickRate} for f in sorted(fct, key=lambda d: d.winRate, reverse=True) if f.winRate]
     return render_template(
         'winrates.html',
         title="Winrates",

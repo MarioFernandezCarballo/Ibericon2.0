@@ -86,10 +86,12 @@
                 </tr>
                 </thead>
                 {% for fct in ratesFactions %}
-                <tr>
-                    <td><small>{{ fct.Faction.name | truncate(25, True, '...', 0) }}</small></td>
-                    <td><small>{{ '%0.2f'| format(fct.UserFaction.winRate) }}%</small></td>
-                </tr>
+                    {% if fct.UserFaction.winRate > 0.0 %}
+                        <tr>
+                            <td><small>{{ fct.Faction.name | truncate(25, True, '...', 0) }}</small></td>
+                            <td><small>{{ '%0.2f'| format(fct.UserFaction.winRate) }}%</small></td>
+                        </tr>
+                    {% endif %}
                 {% endfor %}
             </table>
         </div>
