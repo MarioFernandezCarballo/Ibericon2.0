@@ -915,6 +915,10 @@ margin-top: 30px;
   color: white;
   opacity: .8; /* Firefox */
 }
+.login-form input::placeholder {
+  color: black !important;
+  opacity: .8; /* Firefox */
+}
 #signup {
     display: none;
 }

@@ -54,8 +54,8 @@ def dashboard():
         tournaments=tours,
         numUsers=len(usr),
         numTour=len(tour),
-        amountGolden=50,  # TODO gestionar esto
-        amountTrips=60,
+        amountGolden=app.config['MONEY'],
+        amountTrips=app.config['PERCENTAGE'],
         user=current_user if not current_user.is_anonymous else None
     )
 @app.route("/ranking", methods={"GET", "POST"})
@@ -288,7 +288,7 @@ def updateStatsAdmin():
 @login_required
 @decorators.only_collaborator
 def addNewTournamentAdmin():
-    from flask import request, flash, render_template, redirect, url_for, current_app
+    from flask import request, flash, render_template, redirect, url_for
     from flask_login import current_user
     from utils.admin import updateStats
     from api.bpApiAdmin.utils import newTournamentApi
@@ -306,7 +306,28 @@ def addNewTournamentAdmin():
         'add.html',
         title="Añadir Torneo",
         user=current_user if not current_user.is_anonymous else None
-    )# Tournaments
+    )
+@app.route("/collaborator", methods={"GET", "POST"})
+@login_required
+@decorators.only_collaborator
+def collaboratorAdmin():
+    from flask import request, flash, render_template, redirect, url_for
+    from flask_login import current_user
+    from utils.admin import updateThings
+    if request.method == 'POST':
+        response = updateThings(request.form)
+        if response.status == 200:
+            flash("OK")
+        else:
+            flash("No OK")
+        return redirect(url_for('dashboard'))
+    return render_template(
+        'collaborator.html',
+        title="Espacio de colaborador",
+        user=current_user if not current_user.is_anonymous else None
+    )
+
+# Tournaments
 @app.route("/tournaments", methods={"GET", "POST"})
 def tournamentsEndPoint():
     from flask import render_template

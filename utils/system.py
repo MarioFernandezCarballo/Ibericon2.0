@@ -54,6 +54,9 @@ def createApp(app):
     app.config["COLLABORATOR_PASSWORD"] = config['collab-password']
     app.config["COLLAB_MAIL"] = config['collab-mail']
 
+    app.config["MONEY"] = config['money']
+    app.config["PERCENTAGE"] = config['percentage']
+
     loginManager.init_app(app)
     app.config["loginManager"] = loginManager
     jwt.init_app(app)

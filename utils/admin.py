@@ -1,4 +1,4 @@
-from flask import current_app, jsonify
+from flask import current_app, jsonify, make_response
 from datetime import datetime, timedelta
 import requests
 import json
@@ -367,3 +367,19 @@ def deleteTournament(tor):
         "status": 200,
         "message": "Ok"
     })
+
+
+def updateThings(form):
+    current_app.config['MONEY'] = form['pasta'].replace('€', '') if 'pasta' in form.keys() else current_app.config['MONEY']
+    current_app.config['PERCENTAGE'] = form['porcentaje'].replace('%', '') if 'porcentaje' in form.keys() else current_app.config['PERCENTAGE']
+    with open("secret/config.json", 'r') as conf:
+        config = json.load(conf)
+        conf.close()
+    config['money'] = current_app.config['MONEY']
+    config['percentage'] = current_app.config['PERCENTAGE']
+    with open("secret/config.json", 'w') as conf:
+        json.dump(config, conf, indent=4)
+        conf.close()
+
+
+    return make_response("OK", 200)
