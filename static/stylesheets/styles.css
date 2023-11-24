@@ -771,7 +771,7 @@ header ul li a:hover::before{
 	animation-delay: 2s;
 }
 #norte {
-    top: 8%;
+    top: 9%;
     left: 49%;
 }
 #norte::after {
