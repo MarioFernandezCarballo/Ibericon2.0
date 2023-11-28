@@ -105,7 +105,7 @@ def webhookApi():
                   responses={
                       200: Responses.BaseResponse,
                   },
-                  doc_ui=False)
+                  doc_ui=True)
 @login_required
 @only_left_hand
 def updateAlgorithmApiEndPoint():
