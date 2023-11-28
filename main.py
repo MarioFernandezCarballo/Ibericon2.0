@@ -253,13 +253,15 @@ def factionsEndPoint():
 def clubEndPoint(cl):
     from flask import render_template
     from flask_login import current_user
-    from utils import getClubOnly, getClub
+    from utils import getClubOnly, getClub, getClubs
     club = getClubOnly(cl)
     clTor = getClub(cl)
+    position = getClubs().index(club) + 1
     return render_template(
         'club.html',
         title=club.name,
         subtitle=club.name,
+        position=position,
         club=club,
         clTor=clTor,
         user=current_user if not current_user.is_anonymous else None
