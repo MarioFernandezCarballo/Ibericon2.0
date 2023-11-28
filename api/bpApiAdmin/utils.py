@@ -15,10 +15,6 @@ def setTeamLeaderApi(database, userId, teamId):
     return setTeamLeader(database, userId, teamId, fromApi=True)
 
 
-def algorithmApi(tor, user):
-    return algorithm(tor, user)
-
-
 def newTournamentApi(uri):
     if "https://www.bestcoastpairings.com/event/" in uri:
         eventId = uri.split("/")[-1].split("?")[0]

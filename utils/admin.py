@@ -78,9 +78,9 @@ def setTeamLeader(database, userId, teamId, fromApi=False):
     return 200
 
 
-def algorithm(tor, user):
+def algorithm(user, totalUsers):
     performance = [0, 0, 0]
-    playerModifier = 1 + len(tor.users) / 100
+    playerModifier = 1 + totalUsers / 100
     for game in user['total_games']:
         performance[game['gameResult']] += 1
     points = ((performance[2] * 3) + performance[1])
@@ -138,6 +138,7 @@ def manageUsers(tor, users):
         uri = current_app.config["BCP_API_USERS"].replace("####event####", tor.bcpId)
         response = requests.get(uri, headers=current_app.config["BCP_API_HEADERS"])
         users = json.loads(response.text)
+    totalUsers = len(users['data'])
     for user in users['data']:
         usr = addUserFromTournament(user, tor)
         fct = addFactionFromTournament(user)
@@ -152,7 +153,7 @@ def manageUsers(tor, users):
             usrTor.tied = len([gameRes['gameResult'] for gameRes in user['total_games'] if gameRes['gameResult'] == 1])
             usrTor.lost = len([gameRes['gameResult'] for gameRes in user['total_games'] if gameRes['gameResult'] == 0])
             usrTor.innerId = user['playerId']
-            usrTor.ibericonScore = algorithm(tor, user)
+            usrTor.ibericonScore = algorithm(user, totalUsers)
 
         if fct:
             if fct not in usr.factions:
@@ -344,12 +345,13 @@ def updateAlgorithm():
         uri = current_app.config["BCP_API_USERS"].replace("####event####", tor.bcpId)
         response = requests.get(uri, headers=current_app.config["BCP_API_HEADERS"])
         info = json.loads(response.text)
+        totalUsers = len(info['data'])
         for user in info['data']:
             usr = User.query.filter_by(bcpId=user['userId']).first()
             usrTor = UserTournament.query.filter_by(userId=usr.id).filter_by(tournamentId=tor.id).first()
             usrTor.position = user['placing']
             usrTor.performance = json.dumps(user['total_games'])
-            usrTor.ibericonScore = algorithm(tor, user)
+            usrTor.ibericonScore = algorithm(user, totalUsers)
             current_app.config['database'].session.commit()
         _ = updateStats()
     return jsonify({
