@@ -72,7 +72,7 @@ def setTeamLeader(database, userId, teamId, fromApi=False):
                 "id": usr.bcpId,
                 "name": usr.bcpName,
                 "permission": usr.permissions,
-                "oldLeader": oldLeader
+                "oldLeader": oldLeader.bcpId if oldLeader else None
             }
         })
     return 200

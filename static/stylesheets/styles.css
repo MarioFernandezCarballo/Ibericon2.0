@@ -173,12 +173,10 @@ header ul li a:hover::before{
 .user-actions{
     width: 100%;
     height:fit-content;
-    padding:16px 0;
     background-color: transparent;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
-    display: none;
 }
 .user-actions p{
     margin: auto auto auto 10px;
@@ -261,6 +259,7 @@ header ul li a:hover::before{
     flex-direction: row;
     justify-content: space-between;
     margin-top: 10px;
+    cursor: pointer;
 }
 
 .box-view a.type-btn{
@@ -303,6 +302,7 @@ header ul li a:hover::before{
     border-bottom:1px solid var(--primari-white);
     text-align: center;
     width: 100%;
+    cursor: pointer;
 }
 
 
@@ -416,9 +416,6 @@ header ul li a:hover::before{
 
 
 /* USERS */
-.user-actions{
-    height: 10vh;
-}
 .grow-down {
     flex: 1;
 }
@@ -1025,6 +1022,13 @@ margin-top: 30px;
     }
 }
 @media(max-width:768px){
+.user-actions {
+    flex-direction: column;
+}
+.user-actions p{
+    margin: auto;
+    font-size: 12px;
+}
 td {
     font-size: .8rem;
     text-align: left;

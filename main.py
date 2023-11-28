@@ -49,6 +49,7 @@ def dashboard():
     return render_template(
         'general.html',
         title="General",
+        subtitle="Visión general",
         users=usr,
         clubs=clb,
         tournaments=tours,
@@ -69,7 +70,8 @@ def ranking():
     cls = [{"id": c.id, "conference": "caca","profilePic": c.profilePic, "bcpName": c.name, "ibericonScore": c.ibericonScore} for c in cls]
     return render_template(
         'ranking.html',
-        title="Jugadores",
+        title="Ranking",
+        subtitle="Ranking",
         users=usr,
         norte=[u for u in usr if u['conference']=='Norte'],
         noreste=[u for u in usr if u['conference']=='Noreste'],
@@ -91,6 +93,7 @@ def winRatesEndPoint():
     return render_template(
         'winrates.html',
         title="Winrates",
+        subtitle="Winrates",
         users=usr,
         factions=fct,
         user=current_user if not current_user.is_anonymous else None
@@ -120,6 +123,7 @@ def userEndPoint(us):
         return render_template(
             'user.html',
             title=usr.bcpName,
+            subtitle="Perfil de " + usr.bcpName,
             conference=conference,
             last=lastFaction,
             common=mostCommon,
@@ -152,6 +156,7 @@ def profile():
         return render_template(
             'profile.html',
             title=usr.bcpName,
+            subtitle="Tu perfil",
             conference=conference,
             last=lastFaction,
             common=mostCommon,
@@ -169,6 +174,15 @@ def newImage():
     from utils import updatePicture
     if request.method == 'POST':
         return make_response("result", updatePicture(current_user, request.files))
+    return make_response("Not ok", 400)
+@app.route('/new-team-image/<cl>', methods=['POST'])
+@login_required
+@decorators.only_team_leader
+def newTeamImage(cl):
+    from flask import make_response, request
+    from utils import updateTeamPicture
+    if request.method == 'POST':
+        return make_response("result", updateTeamPicture(cl, request.files))
     return make_response("Not ok", 400)
 @app.route('/position', methods=['GET', 'POST'])
 @login_required
@@ -190,6 +204,7 @@ def position():
         return render_template(
             'position.html',
             title=usr.bcpName,
+            subtitle="Tu posición",
             conference=conference,
             last=lastFaction,
             common=mostCommon,
@@ -214,9 +229,24 @@ def factionEndPoint(fact):
     return render_template(
         'faction.html',
         title=faction.name,
+        subtitle=faction.name,
         user=current_user if not current_user.is_anonymous else None,
         faction=fct,
         fctOnly=faction
+    )
+@app.route("/factions", methods={"GET"})
+def factionsEndPoint():
+    from flask import render_template
+    from flask_login import current_user
+    from utils import getFactions
+    fct, usrFct = getFactions()
+    return render_template(
+        'factions.html',
+        title="Facciones",
+        subtitle="Facciones",
+        user=current_user if not current_user.is_anonymous else None,
+        factions=fct,
+        usrFct=usrFct
     )
 # Club
 @app.route("/club/<cl>", methods={"GET"})
@@ -229,6 +259,7 @@ def clubEndPoint(cl):
     return render_template(
         'club.html',
         title=club.name,
+        subtitle=club.name,
         club=club,
         clTor=clTor,
         user=current_user if not current_user.is_anonymous else None
@@ -305,6 +336,7 @@ def addNewTournamentAdmin():
     return render_template(
         'add.html',
         title="Añadir Torneo",
+        subtitle="Añadir torneo",
         user=current_user if not current_user.is_anonymous else None
     )
 @app.route("/collaborator", methods={"GET", "POST"})
@@ -324,6 +356,7 @@ def collaboratorAdmin():
     return render_template(
         'collaborator.html',
         title="Espacio de colaborador",
+        subtitle="El súper selecto espacio de los máquinas",
         user=current_user if not current_user.is_anonymous else None
     )
 @app.route('/update_server', methods=['POST'])
@@ -364,6 +397,7 @@ def tournamentsEndPoint():
     return render_template(
         'tournaments.html',
         title="Torneos",
+        subtitle="Torneos",
         user=current_user if not current_user.is_anonymous else None,
         tournaments=tors,
         past=past

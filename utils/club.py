@@ -1,6 +1,10 @@
 from flask import current_app
 from sqlalchemy import desc
 
+import base64
+import requests
+import json
+
 from database import Club, Tournament, UserTournament
 
 
@@ -35,3 +39,18 @@ def addClub(db, te):
             ))
     db.session.commit()
     return Club.query.filter_by(bcpId=te['teamId']).first() if te['team'] else None
+
+
+def updateTeamPicture(cl, form):
+    file = form['file']
+    img = base64.b64encode(file.read())
+    response = requests.post(current_app.config['IMAGE_BB_UPLOAD'],
+                             params={'key': current_app.config['IMAGE_BB_KEY']},
+                             data={'image': img})
+    u = Club.query.filter_by(id=cl).first()
+    try:
+        u.profilePic = json.loads(response.text)['data']['url']
+    except KeyError:
+        return 400
+    current_app.config['database'].session.commit()
+    return 200

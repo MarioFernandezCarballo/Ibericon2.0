@@ -7,7 +7,6 @@
             <form id="uploadForm" >
                 <label for="imageInput" class="file-input-label">Choose Image</label>
                 <input name="file" type="file" id="imageInput" accept="image/*" onchange="displaySelectedFile()">
-                <!-- Image preview container -->
                 <img style="width: 300px; display: none; margin-top: 10px;" id="imagePreview" alt="Image Preview">
                 <br>
                 <button class="file-input-label" style="margin-top: 10px; display: none;" id="buttonPicture" type="submit">Upload</button>
@@ -139,7 +138,7 @@
 
         // Send AJAX POST request to Flask server
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', '/new-image', true);
+        xhr.open('POST', '/new-team-image/' + {{ club.id }}, true);
 
         // Set up the callback to handle the response
         xhr.onload = function () {
