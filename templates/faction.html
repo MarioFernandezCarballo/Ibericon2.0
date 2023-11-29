@@ -63,7 +63,8 @@
                 <tr onclick="location.href='/user/{{ fc.UserFaction.userId }}';">
                     {% for usr in fc.Faction.users %}
                         {% if usr.id == fc.UserFaction.userId %}
-                            <td style="width: 40%;">{{ usr.bcpName | truncate(30, True, '...', 0) }}</td>
+                            <td style="width: 40%;"><img src="{{ usr.profilePic }}" class="rounded-circle shadow-4 kt-avatar"
+                                                 alt="Avatar" /><small>{{ usr.bcpName | truncate(30, True, '...', 0) }}</small></td>
                         {% endif %}
                     {% endfor %}
                     <td>{{ loop.index }}</td>

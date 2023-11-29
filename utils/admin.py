@@ -343,18 +343,19 @@ def updateStats():
 
 def updateAlgorithm():
     for tor in Tournament.query.all():
-        uri = current_app.config["BCP_API_USERS"].replace("####event####", tor.bcpId)
-        response = requests.get(uri, headers=current_app.config["BCP_API_HEADERS"])
-        info = json.loads(response.text)
-        totalUsers = len(info['data'])
-        for user in info['data']:
-            usr = User.query.filter_by(bcpId=user['userId']).first()
-            usrTor = UserTournament.query.filter_by(userId=usr.id).filter_by(tournamentId=tor.id).first()
-            usrTor.position = user['placing']
-            usrTor.performance = json.dumps(user['total_games'])
-            usrTor.ibericonScore = algorithm(user, totalUsers)
-            current_app.config['database'].session.commit()
-        _ = updateStats()
+        if tor.isFinished:
+            uri = current_app.config["BCP_API_USERS"].replace("####event####", tor.bcpId)
+            response = requests.get(uri, headers=current_app.config["BCP_API_HEADERS"])
+            info = json.loads(response.text)
+            totalUsers = len(info['data'])
+            for user in info['data']:
+                usr = User.query.filter_by(bcpId=user['userId']).first()
+                usrTor = UserTournament.query.filter_by(userId=usr.id).filter_by(tournamentId=tor.id).first()
+                usrTor.position = user['placing']
+                usrTor.performance = json.dumps(user['total_games'])
+                usrTor.ibericonScore = algorithm(user, totalUsers)
+                current_app.config['database'].session.commit()
+            _ = updateStats()
     return jsonify({
         "status": 200,
         "message": "Ok"
