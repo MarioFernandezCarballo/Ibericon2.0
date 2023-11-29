@@ -3,6 +3,10 @@
     --primari-yellow:#EB9C38;
     --primari-white:#EBEAEA;
 }
+@font-face {
+  font-family: 'Machine';
+  src: url("stylesheets/fonts/MachineStd.otf") format("opentype");
+}
 *{
     font-family: Ubuntu, "Noto Sans Myanmar", sans-serif;
 }

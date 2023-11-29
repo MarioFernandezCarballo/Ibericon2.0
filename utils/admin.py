@@ -81,11 +81,12 @@ def setTeamLeader(database, userId, teamId, fromApi=False):
 def algorithm(user, totalUsers):
     performance = [0, 0, 0]
     playerModifier = 1 + totalUsers / 100
+    roundModifier = (10 + len(user['total_games'])) / len(user['total_games'])
     for game in user['total_games']:
         performance[game['gameResult']] += 1
     points = ((performance[2] * 3) + performance[1])
     finalPoints = points
-    return finalPoints * playerModifier
+    return finalPoints * playerModifier * roundModifier
 
 
 def newTournament(tor, finished=False):

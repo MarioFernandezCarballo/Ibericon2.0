@@ -31,9 +31,11 @@ createDatabase(app)
 # Generic
 @app.route('/', methods=['GET', 'POST'])
 def dashboard():
-    from flask import render_template
+    from flask import render_template, redirect, url_for
     from flask_login import current_user
     from utils import getUsers, getClubs, getAllTournaments
+    if current_user.is_anonymous:
+        return redirect(url_for('login'))
     usr = getUsers()
     clb = getClubs()
     tour = getAllTournaments()
@@ -409,3 +411,7 @@ if __name__ == '__main__':
     app.run(host=app.config['HOST'], port=app.config['PORT'], debug=app.config['DEBUG'])
 
 # TODO mysql
+#  tipografía - itc machine std para los titulares / noto sans myanmar
+#  Poner bonito el header con el hola no se que
+#  me manda los dos moñecos y los pongo bien
+#  sacar detalles del torneo y hacerlo más one page app.
