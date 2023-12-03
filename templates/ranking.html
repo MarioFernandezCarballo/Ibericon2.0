@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="users-content">
-    <div class="col-md-8 align-self-stretch users-col">
+<div class="row grow-down">
+    <div class="col-md-4 align-self-stretch">
         <div class="box-view box-paginated" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
             <p class="title-box">Ranking Individual</p>
             <table class="fl-table">
@@ -22,7 +22,7 @@
             </nav>
         </div>
     </div>
-    <div class="col-md-8 align-self-stretch teams-col">
+    <div class="col-md-4 align-self-stretch">
         <div class="box-view box-paginated" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
             <p class="title-box">Ranking Equipos</p>
             <table class="fl-table">
@@ -42,7 +42,7 @@
             </nav>
         </div>
     </div>
-    <div class="col-md-8 align-self-stretch users-col">
+    <div class="col-md-4 align-self-stretch r-n">
         <div class="box-view box-paginated" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
             <p class="title-box">Conferencia Norte</p>
             <table class="fl-table">
@@ -63,7 +63,7 @@
             </nav>
         </div>
     </div>
-    <div class="col-md-8 align-self-stretch users-col">
+    <div class="col-md-4 align-self-stretch r-ne">
         <div class="box-view box-paginated" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
             <p class="title-box">Conferencia Noreste</p>
             <table class="fl-table">
@@ -84,7 +84,7 @@
             </nav>
         </div>
     </div>
-    <div class="col-md-8 align-self-stretch users-col">
+    <div class="col-md-4 align-self-stretch r-e">
         <div class="box-view box-paginated" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
             <p class="title-box">Conferencia Este</p>
             <table class="fl-table">
@@ -105,7 +105,7 @@
             </nav>
         </div>
     </div>
-    <div class="col-md-8 align-self-stretch users-col">
+    <div class="col-md-4 align-self-stretch r-c">
         <div class="box-view box-paginated" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
             <p class="title-box">Conferencia Centro</p>
             <table class="fl-table">
@@ -126,7 +126,7 @@
             </nav>
         </div>
     </div>
-    <div class="col-md-8 align-self-stretch users-col">
+    <div class="col-md-4 align-self-stretch r-s">
         <div class="box-view box-paginated" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
             <p class="title-box">Conferencia Sur</p>
             <table class="fl-table">
@@ -158,7 +158,7 @@
     var sur = {{ sur | tojson | safe }};
     var teams = {{ teams | tojson | safe }};
 
-    var itemsPerPage = 10;
+    var itemsPerPage = Math.floor(window.innerHeight * 20 / 1400);
     var currentUsersPage = 1;
     var currentTeamsPage = 1;
     var currentNortePage = 1;
@@ -166,6 +166,8 @@
     var currentEstePage = 1;
     var currentCentroPage = 1;
     var currentSurPage = 1;
+
+
 
     function renderTable(start, end, list, className) {
         var tableBody = document.getElementById(className);

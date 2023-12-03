@@ -203,6 +203,9 @@ def position():
         past = getPastTournamentsByUser(usr)
         globalClass = getUserGlobalPosition(usr)
         conferenceClass = getUserConferencePosition(usr)
+        future = [{"img":t.imgUri, "name": t.name, "id": t.id, "position": t.date} for t in future]
+        past = [{"img":t["tournament"].imgUri, "name": t['tournament'].name, "id": t['tournament'].id, "position": t['userTournament'].position} for t in past]
+        ratesFactions = [{"name": f.Faction.name, "id": f.Faction.id, "position": "%.2f" % f.UserFaction.winRate} for f in ratesFactions]  # TODO add image
         return render_template(
             'position.html',
             title=usr.bcpName,
@@ -412,6 +415,6 @@ if __name__ == '__main__':
 
 # TODO mysql
 #  tipografía - itc machine std para los titulares / noto sans myanmar
-#  Poner bonito el header con el hola no se que
 #  me manda los dos moñecos y los pongo bien
+#  hover en opciones
 #  sacar detalles del torneo y hacerlo más one page app.

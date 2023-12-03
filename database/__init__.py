@@ -60,6 +60,7 @@ class Faction(db.Model):
     bcpId = db.Column(db.String(30), nullable=False)
     icon = db.Column(db.String(500))
     name = db.Column(db.String(30), nullable=False)
+    # imgUri = db.Column(db.String(100))  TODO
     shortName = db.Column(db.String(30))
     won = db.Column(db.Integer, default=0)
     tied = db.Column(db.Integer, default=0)

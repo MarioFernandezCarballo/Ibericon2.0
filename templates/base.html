@@ -44,12 +44,21 @@
 
 <section id="contianerAll">
   <div class="user-actions">
-      {% if user %}
-        <p>Hola {{ user.bcpName | truncate(30, True, '...', 0) }}</p>
-        <p>{{ subtitle }}</p>
-      {% else %}
-        <p>{{ subtitle }}</p>
-      {% endif %}
+      <p>{{ subtitle }}</p>
+      <div class="dropdown alerts">
+          {% if user %}
+            <p>{{ user.bcpName | truncate(30, True, '...', 0) }}</p>
+          {% endif %}
+          <input type="search" placeholder="Buscar">
+          <button  type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="../static/stylesheets/img/icon_alerts.svg" alt="">
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Notificaciones</a></li>
+            <li><a class="dropdown-item" href="#">Mi posición</a></li>
+            <li><a class="dropdown-item" href="#">Torneos</a></li>
+          </ul>
+      </div>
     <!--<form action="">
       <div class="flex-form">
         <input type="search" placeholder="Buscar">

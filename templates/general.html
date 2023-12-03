@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container">
+<div class="container grow-down flex-screen">
     <div class="row">
       <div class="col-md-3 align-self-stretch">
         <div class="box-view">
@@ -31,10 +31,10 @@
         </div>
       </div>
     </div>
-    <div class="row">
+    <div class="row grow-down">
       <div class="col-md-4 align-self-stretch">
         <div class="box-view" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
-          <p class="title-box">Top 5 Ibericon</p>
+          <p class="title-box">Top 10 Ibericon</p>
 
           <table class="fl-table">
             <thead>
@@ -44,7 +44,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for us in users[:5] %}
+            {% for us in users[:10] %}
                 <tr onclick="location.href='/user/{{ us.id }}';">
                     <td style="width: 70%;"><img src="{{ us.profilePic }}" class="rounded-circle shadow-4 kt-avatar"
                                                  alt="Avatar" /><small>{{ us.bcpName | truncate(20, True, '...', 0) }}</small></td>
@@ -67,7 +67,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for cl in clubs[:5] %}
+            {% for cl in clubs[:10] %}
                 <tr onclick="location.href='/club/{{ cl.id }}';">
                   <td style="width: 70%;"><img src="{{ cl.profilePic }}" class="rounded-circle shadow-4 kt-avatar"
                                                  alt="Avatar" /><small>{{ cl.name | truncate(20, True, '...', 0) }}</small></td>
@@ -81,7 +81,7 @@
       </div>
       <div class="col-md-4 align-self-stretch">
         <div class="box-view" style="background-image: url(../static/stylesheets/img/bg-invent-3.png);">
-          <p class="title-box">Próximos Eventos</p>
+          <p class="title-box">Eventos</p>
           <table class="fl-table">
             <thead>
             <tr>
@@ -90,7 +90,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for to in tournaments[:5] %}
+            {% for to in tournaments[:10] %}
                 <tr onclick="location.href='{{ to.bcpUri }}';">
                   <td style="width: 70%;"><img src="{{ to.imgUri }}" class="rounded-circle shadow-4 kt-avatar"
                                                  alt="Avatar" /><small>{{ to.name | truncate(15, True, '...', 0) }}</small></td>
