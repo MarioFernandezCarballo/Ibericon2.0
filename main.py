@@ -89,15 +89,17 @@ def winRatesEndPoint():
     from flask_login import current_user
     from utils import getUsersWinRate, getFactions
     usr = getUsersWinRate()
-    fct, _ = getFactions()
+    fctO, _ = getFactions()
     usr = [{"id": u.id, "profilePic": u.profilePic, "bcpName": u.bcpName, "winRate": u.winRate} for u in usr if u.winRate]
-    fct = [{"id": f.id, "bcpName": f.name, "winRate": f.winRate, "pickRate": f.pickRate} for f in sorted(fct, key=lambda d: d.winRate, reverse=True) if f.winRate]
+    fct = [{"id": f.id, "bcpName": f.name, "winRate": f.winRate} for f in sorted(fctO, key=lambda d: d.winRate, reverse=True) if f.winRate]  # TODO add img
+    fctPr = [{"id": f.id, "bcpName": f.name, "winRate": f.pickRate} for f in sorted(fctO, key=lambda d: d.pickRate, reverse=True) if f.pickRate]  # TODO add img
     return render_template(
         'winrates.html',
         title="Winrates",
         subtitle="Winrates",
         users=usr,
         factions=fct,
+        factionsPick=fctPr,
         user=current_user if not current_user.is_anonymous else None
     )
 # User
@@ -293,7 +295,7 @@ def signup():
     if request.method == 'POST':
         response, _ = userSignup(request.form)
         return response
-    return render_template('signup.html', title="Registro", cities=cities, user=current_user if not current_user.is_anonymous else None)
+    return render_template('landing.html', title="Registro", cities=cities, user=current_user if not current_user.is_anonymous else None)
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required
 def logout():
@@ -406,7 +408,11 @@ def tournamentsEndPoint():
         title="Torneos",
         subtitle="Torneos",
         user=current_user if not current_user.is_anonymous else None,
-        tournaments=tors,
+        torN=[tor for tor in tors if tor['conference'] == 'Norte'],
+        torNE=[tor for tor in tors if tor['conference'] == 'Noreste'],
+        torE=[tor for tor in tors if tor['conference'] == 'Este'],
+        torC=[tor for tor in tors if tor['conference'] == 'Centro'],
+        torS=[tor for tor in tors if tor['conference'] == 'Sur'],
         past=past
     )
 
@@ -414,7 +420,8 @@ if __name__ == '__main__':
     app.run(host=app.config['HOST'], port=app.config['PORT'], debug=app.config['DEBUG'])
 
 # TODO mysql
-#  tipografía - itc machine std para los titulares / noto sans myanmar
+#  tipografía - itc machine std para los titulares
 #  me manda los dos moñecos y los pongo bien
 #  hover en opciones
-#  sacar detalles del torneo y hacerlo más one page app.
+#  sacar detalles del torneo y hacerlo más one page app
+#  Terminar futuros torneos como los rankings de conferencia.

@@ -42,9 +42,9 @@
             </nav>
         </div>
     </div>
-    <div class="col-md-4 align-self-stretch r-n">
+    <div class="col-md-4 align-self-stretch r-n" id="Norte">
         <div class="box-view box-paginated" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
-            <p class="title-box">Conferencia Norte</p>
+            <p class="title-box title-selector"><a onclick="back('Norte')" class="page-link"><</a>Conferencia Norte<a onclick="forward('Norte')" class="page-link">></a></p>
             <table class="fl-table">
                 <thead>
                     <tr>
@@ -63,9 +63,9 @@
             </nav>
         </div>
     </div>
-    <div class="col-md-4 align-self-stretch r-ne">
+    <div class="col-md-4 align-self-stretch r-ne" id="Noreste">
         <div class="box-view box-paginated" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
-            <p class="title-box">Conferencia Noreste</p>
+            <p class="title-box title-selector"><a onclick="back('Noreste')" class="page-link"><</a>Conferencia Noreste<a onclick="forward('Noreste')" class="page-link">></a></p>
             <table class="fl-table">
                 <thead>
                     <tr>
@@ -84,9 +84,9 @@
             </nav>
         </div>
     </div>
-    <div class="col-md-4 align-self-stretch r-e">
+    <div class="col-md-4 align-self-stretch r-e" id="Este">
         <div class="box-view box-paginated" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
-            <p class="title-box">Conferencia Este</p>
+            <p class="title-box title-selector"><a onclick="back('Este')" class="page-link"><</a>Conferencia Este<a onclick="forward('Este')" class="page-link">></a></p>
             <table class="fl-table">
                 <thead>
                     <tr>
@@ -105,9 +105,9 @@
             </nav>
         </div>
     </div>
-    <div class="col-md-4 align-self-stretch r-c">
+    <div class="col-md-4 align-self-stretch r-c" id="Centro">
         <div class="box-view box-paginated" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
-            <p class="title-box">Conferencia Centro</p>
+            <p class="title-box title-selector"><a onclick="back('Centro')" class="page-link"><</a>Conferencia Centro<a onclick="forward('Centro')" class="page-link">></a></p>
             <table class="fl-table">
                 <thead>
                     <tr>
@@ -126,9 +126,9 @@
             </nav>
         </div>
     </div>
-    <div class="col-md-4 align-self-stretch r-s">
+    <div class="col-md-4 align-self-stretch r-s" id="Sur">
         <div class="box-view box-paginated" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
-            <p class="title-box">Conferencia Sur</p>
+            <p class="title-box title-selector"><a onclick="back('Sur')" class="page-link"><</a>Conferencia Sur<a onclick="forward('Sur')" class="page-link">></a></p>
             <table class="fl-table">
                 <thead>
                     <tr>
@@ -167,7 +167,32 @@
     var currentCentroPage = 1;
     var currentSurPage = 1;
 
-
+    var backDictionary = {
+        "Norte": "Sur",
+        "Sur": "Este",
+        "Este": "Noreste",
+        "Noreste": "Centro",
+        "Centro": "Norte",
+    };
+    function back(reg) {
+        var table = document.getElementById(reg)
+        table.style.display = 'none';
+        var tableToShow = document.getElementById(backDictionary[reg])
+        tableToShow.style.display = 'block'
+    }
+    var forwardDictionary = {
+        "Sur": "Norte",
+        "Este": "Sur",
+        "Noreste": "Este",
+        "Centro": "Noreste",
+        "Norte": "Centro",
+    };
+    function forward(reg) {
+        var table = document.getElementById(reg)
+        table.style.display = 'none';
+        var tableToShow = document.getElementById(forwardDictionary[reg])
+        tableToShow.style.display = 'block'
+    }
 
     function renderTable(start, end, list, className) {
         var tableBody = document.getElementById(className);

@@ -318,6 +318,12 @@ header ul li a:hover::before{
     border-bottom:1px solid var(--primari-white);
     text-align: center;
     width: 100%;
+}
+.title-selector {
+    display: flex;
+    justify-content: space-between;
+}
+.title-selector a{
     cursor: pointer;
 }
 
@@ -460,6 +466,7 @@ header ul li a:hover::before{
 .page-item .page-link {
     color: white;
     background-color: transparent;
+    cursor: pointer;
 }
 .page-link:hover {
     background-color: rgba(255,255,255,.2);
@@ -635,8 +642,7 @@ header ul li a:hover::before{
 	clear: both;
 }
 .bg {
-    position: relative;
-	box-shadow: 0 1rem 3.1rem -.4rem rgba(26,45,47,0.6);
+    width: 60%;
 }
 .point {
 	position: absolute;
@@ -989,7 +995,8 @@ padding: 1% 15%;
     .col-md-3{
         width: 50%;
     }
-    .col-md-4 {
+    .col-md-4,
+    .col-md-6{
         width: 100%;
     }
     .col-md-8 {

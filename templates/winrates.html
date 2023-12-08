@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="winrates-content">
-    <div class="col-md-8 align-self-stretch users-col">
+<div class="row grow-down">
+    <div class="col-md-4 align-self-stretch">
         <div class="box-view box-paginated" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
             <p class="title-box">Winrate Individual</p>
             <table class="fl-table">
@@ -23,7 +23,7 @@
             </nav>
         </div>
     </div>
-    <div class="col-md-8 align-self-stretch users-col">
+    <div class="col-md-4 align-self-stretch">
         <div class="box-view box-paginated" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
             <p class="title-box">Winrate Facciones</p>
             <table class="fl-table">
@@ -31,7 +31,6 @@
                     <tr>
                         <th style="width: 50%;"><small>Nombre</small></th>
                         <th><small>Posición</small></th>
-                        <th><small>Winrate</small></th>
                         <th><small>Pickrate</small></th>
                     </tr>
                 </thead>
@@ -46,17 +45,41 @@
             </nav>
         </div>
     </div>
+    <div class="col-md-4 align-self-stretch">
+        <div class="box-view box-paginated" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
+            <p class="title-box">Pickrate Facciones</p>
+            <table class="fl-table">
+                <thead>
+                    <tr>
+                        <th style="width: 50%;"><small>Nombre</small></th>
+                        <th><small>Posición</small></th>
+                        <th><small>Pickrate</small></th>
+                    </tr>
+                </thead>
+                <tbody id="factions-body-pr">
+                <tbody>
+            </table>
+            <!-- Pagination Controls -->
+            <nav aria-label="Page navigation" class="pagination-nav">
+                <ul class="pagination" id="factionPrPagination">
+                    <!-- Pagination links will be dynamically added here using JavaScript -->
+                </ul>
+            </nav>
+        </div>
+    </div>
 </div>
 <script>
     // Get user data from Flask template
     var users = {{ users | tojson | safe }};
     var factions = {{ factions | tojson | safe }}
+    var factionsPick = {{ factionsPick | tojson | safe }}
 
-    var itemsPerPage = 10;
+    var itemsPerPage = Math.floor(window.innerHeight * 20 / 1400);
     var currentUsersPage = 1;
     var currentFactionsPage = 1;
+    var currentFactionsPickPage = 1;
 
-    function renderTable(start, end, list, className, isFaction) {
+    function renderTable(start, end, list, className) {
         var tableBody = document.getElementById(className);
         tableBody.innerHTML = '';
 
@@ -66,22 +89,20 @@
                 var row = document.createElement('tr');
                 row.onclick = function () {
                     location.href = '/user/' + user.id;
-                    if (isFaction) {
+                    if (className.split("-")[0] == 'factions') {
                         location.href = '/faction/' + user.id;
                     };
                 };
 
                 var nameCell = document.createElement('td');
                 nameCell.style.width = '50%';
-                if (!isFaction) {
-                    nameCell.style.width = '60%';
-                    var imageAvatar = document.createElement('img');
-                    imageAvatar.src = user.profilePic;
-                    imageAvatar.classList.add('shadow-4')
-                    imageAvatar.classList.add('rounded-circle')
-                    imageAvatar.classList.add('kt-avatar')
-                    nameCell.appendChild(imageAvatar);
-                };
+                nameCell.style.width = '60%';
+                var imageAvatar = document.createElement('img');
+                imageAvatar.src = user.profilePic;
+                imageAvatar.classList.add('shadow-4')
+                imageAvatar.classList.add('rounded-circle')
+                imageAvatar.classList.add('kt-avatar')
+                nameCell.appendChild(imageAvatar);
                 var smallName = document.createElement('small');
                 smallName.textContent = user.bcpName.substring(0, 20);
                 nameCell.appendChild(smallName);
@@ -96,19 +117,12 @@
                 scoreCell.textContent += '%'
                 row.appendChild(scoreCell);
 
-                if (isFaction) {
-                    var pickCell = document.createElement('td');
-                    pickCell.textContent = user.pickRate > 0.0 ? user.pickRate.toFixed(1) : '0.0';
-                    pickCell.textContent += '%'
-                    row.appendChild(pickCell);
-                };
-
                 tableBody.appendChild(row);
             }
         }
     }
 
-    function renderPagination(idName, list, className, currentPage, isFaction) {
+    function renderPagination(idName, list, className, currentPage) {
         var totalPages = Math.ceil(list.length / itemsPerPage);
         var paginationElement = document.getElementById(idName);
         paginationElement.innerHTML = '';
@@ -121,8 +135,8 @@
         a.onclick = function () {
             currentPage = currentPage - 1;
             currentPage = currentPage < 1 ? 1 : currentPage
-            renderTable((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage, list, className, isFaction);
-            renderPagination(idName, list, className, currentPage, isFaction);
+            renderTable((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage, list, className);
+            renderPagination(idName, list, className, currentPage);
         };
         liBack.appendChild(a);
         paginationElement.appendChild(liBack);
@@ -143,17 +157,19 @@
         a.onclick = function () {
             currentPage = currentPage + 1;
             currentPage = currentPage > totalPages ? totalPages : currentPage
-            renderTable((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage, list, className, isFaction);
-            renderPagination(idName, list, className, currentPag, isFaction);
+            renderTable((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage, list, className);
+            renderPagination(idName, list, className, currentPage);
         };
         liNext.appendChild(a);
         paginationElement.appendChild(liNext);
     }
 
     // Initial rendering
-    renderTable(0, itemsPerPage, users, 'users-body', false);
-    renderPagination('userPagination', users, 'users-body', currentUsersPage, false);
-    renderTable(0, itemsPerPage, factions, 'factions-body', true);
-    renderPagination('factionPagination', factions, 'factions-body', currentFactionsPage, true);
+    renderTable(0, itemsPerPage, users, 'users-body');
+    renderPagination('userPagination', users, 'users-body', currentUsersPage);
+    renderTable(0, itemsPerPage, factions, 'factions-body');
+    renderPagination('factionPagination', factions, 'factions-body', currentFactionsPage);
+    renderTable(0, itemsPerPage, factionsPick, 'factions-body-pr');
+    renderPagination('factionPrPagination', factionsPick, 'factions-body-pr', currentFactionsPickPage);
 </script>
 {% endblock %}

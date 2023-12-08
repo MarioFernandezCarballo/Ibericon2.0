@@ -2,6 +2,7 @@ from flask import current_app, jsonify, make_response
 from datetime import datetime, timedelta
 import requests
 import json
+from json.decoder import JSONDecodeError
 import base64
 from sqlalchemy import desc
 from database import *
@@ -224,7 +225,7 @@ def addClubFromTournament(te, tor):
                                      data={'image': img})
             try:
                 imgUrl = json.loads(response.text)['data']['url']
-            except KeyError:
+            except KeyError or JSONDecodeError:
                 pass
         if not Club.query.filter_by(bcpId=te['teamId']).first():
             current_app.config['database'].session.add(Club(
