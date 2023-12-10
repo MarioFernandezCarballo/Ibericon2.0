@@ -119,7 +119,7 @@ def manageTournament(info):
     try:
         city = City.query.filter_by(name=current_app.config["CITIES"][info['zip'][0:2]]).first()
         if 'formatted_address' in info.keys():
-            location = info['formatted_address'] + ' ' + info['streetNum'] + ' - ' + info['city']
+            location = info['formatted_address']
         else:
             location = info['formatted'] + ' ' + info['streetNum'] + ' - ' + info['city']
     except KeyError:
