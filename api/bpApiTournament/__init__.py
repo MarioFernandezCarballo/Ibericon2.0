@@ -7,7 +7,6 @@ from .utils import getTournament, getTournaments
 
 tournamentApiBP = APIBlueprint('tournamentApiBluePrint', __name__, url_prefix='/api/tournament')
 
-
 @tournamentApiBP.get("/",
                      summary="Tournaments list",
                      description='Get tournament list',

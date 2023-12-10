@@ -5,7 +5,7 @@ from flask_openapi3 import APIBlueprint
 from flask_login import login_required
 from flask_limiter import Limiter, RateLimitExceeded
 
-from utils.decorators import only_left_hand, only_collaborator
+from utils import only_left_hand, only_collaborator
 
 from .queries import Queries
 from .responses import Responses

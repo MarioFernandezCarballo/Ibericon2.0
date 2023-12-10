@@ -1,5 +1,4 @@
 from flask import current_app, jsonify
-
 from sqlalchemy import desc
 
 from database import Faction, UserFaction, User

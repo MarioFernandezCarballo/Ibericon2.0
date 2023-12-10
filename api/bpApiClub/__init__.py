@@ -1,7 +1,7 @@
 from flask_openapi3 import APIBlueprint
 from flask_login import login_required
 
-from utils.decorators import only_team_leader
+from utils import only_team_leader
 
 from .utils import getClubs, getClub, modifyClub
 from .responses import Responses

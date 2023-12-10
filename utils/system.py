@@ -5,8 +5,7 @@ import os
 from werkzeug.security import generate_password_hash
 
 from database import db, User, Conference, City
-from api.bpApiAuth import loginManager, jwt
-from api.bpApiAdmin import limiter
+from api import bpApiAdmin, bpApiAuth
 
 
 def createApp(app):
@@ -57,14 +56,14 @@ def createApp(app):
     app.config["MONEY"] = config['money']
     app.config["PERCENTAGE"] = config['percentage']
 
-    loginManager.init_app(app)
-    app.config["loginManager"] = loginManager
-    jwt.init_app(app)
-    app.config["jwt"] = jwt
+    bpApiAuth.loginManager.init_app(app)
+    app.config["loginManager"] = bpApiAuth.loginManager
+    bpApiAuth.jwt.init_app(app)
+    app.config["jwt"] = bpApiAuth.jwt
     db.init_app(app)
     app.config["database"] = db
-    limiter.init_app(app)
-    app.config["limiter"] = limiter
+    bpApiAdmin.limiter.init_app(app)
+    app.config["limiter"] = bpApiAdmin.limiter
 
     return app
 

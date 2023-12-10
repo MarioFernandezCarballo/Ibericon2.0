@@ -3,7 +3,6 @@ from sqlalchemy import desc
 
 from database import Tournament, UserTournament, User, Faction, Club, City
 
-
 def getTournaments(query):
     result = Tournament.query
     result = (result.filter_by(conference=query.conference)

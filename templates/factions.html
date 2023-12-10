@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="winrates-content">
+<div class="row grow-down">
     {% for fct in factions %}
-        <div class="col-md-8 align-self-stretch users-col">
+        <div class="col-md-4 align-self-stretch">
             <div class="box-view box-paginated" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
                 <p class="title-box" onclick="location.href='/faction/{{ fct.id }}';">{{ fct.name }}</p>
                 <table class="fl-table">

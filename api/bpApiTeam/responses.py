@@ -1,7 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List
 
-
 class Users:
     class User(BaseModel):
         id: str = Field(None, description="BCP Id")

@@ -118,6 +118,7 @@ def manageTournament(info):
     isTeamTournament = info['teamEvent']
     try:
         city = City.query.filter_by(name=current_app.config["CITIES"][info['zip'][0:2]]).first()
+        location = info['streetName'] + ' ' + info['streetNum'] + ' - ' + info['city']
     except KeyError:
         return None
     current_app.config['database'].session.add(Tournament(
@@ -127,6 +128,7 @@ def manageTournament(info):
         name=info['name'].strip(),
         shortName=info['name'].replace(" ", "").lower(),
         city=city.id,
+        address=location,
         conference=city.conference_id,
         isTeam=isTeamTournament,
         date=info['eventDate'].split("T")[0],

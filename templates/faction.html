@@ -1,80 +1,76 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div class="row mb-4">
-      <div class="col-md-12 align-self-stretch">
-        <div class="box-view box-view-profile" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
-            <div class="position-container">
-              <div class="profile-info margin-right-20">
-              </div>
-                <div class="profile-info grow-down">
-                    <div style="text-align: center;">
-                        <p class="h2"><strong>{{ fctOnly.name }}</strong></p>
+    <div class="row grow-down">
+        <div class="col-md-6 align-self-stretch">
+            <div class="box-view grow-down" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
+                <div style="align-items: flex-start" class="position-container grow-down">
+                    <div class="profile-info margin-right-20">
                     </div>
-                  <div style="margin-top: 15px;" class="position-info">
-                      <div class="col-md-3 align-self-stretch kt-mr-10">
-                      <div class="box-view position-item">
-                          <p class="display-6"><i class="icon-bargraph"></i></p>
-                        <p class="h4">{{ '%0.2f'| format(fctOnly.winRate) }}</p>
-                        <p>Winrate</p>
-                      </div>
+                    <div class="profile-info grow-down">
+                        <div style="text-align: center;">
+                            <p class="h2"><strong>{{ fctOnly.name }}</strong></p>
+                        </div>
+                        <div style="margin-top: 15px; flex-wrap: wrap;" class="position-info">
+                            <div class="col-md-6 align-self-stretch margin-right-5">
+                                <div class="box-view position-item">
+                                    <p class="display-6"><i class="icon-bargraph"></i></p>
+                                    <p class="h4">{{ '%0.2f'| format(fctOnly.winRate) }}</p>
+                                    <p>Winrate</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6 align-self-stretch margin-right-5">
+                                <div class="box-view position-item">
+                                    <p class="display-6"><i class="icon-piechart"></i></p>
+                                    <p class="h4">{{ '%0.2f'| format(fctOnly.pickRate) }}</p>
+                                    <p>Pickrate</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6 align-self-stretch margin-right-5">
+                                <div class="box-view position-item">
+                                    <p class="display-6"><i class="icon-profile-male"></i></p>
+                                    <p class="h4">{{ faction|length }}</p>
+                                    <p>Jugadores</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6 align-self-stretch margin-right-5">
+                                <div class="box-view position-item">
+                                    <p class="display-6"><i class="icon-trophy"></i></p>
+                                    <p class="h4">{{ fctOnly.tournaments|length }}</p>
+                                    <p>Torneos</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-3 align-self-stretch kt-mr-10">
-                      <div class="box-view position-item">
-                          <p class="display-6"><i class="icon-piechart"></i></p>
-                        <p class="h4">{{ '%0.2f'| format(fctOnly.pickRate) }}</p>
-                        <p>Pickrate</p>
-                      </div>
-                    </div>
-                      <div class="col-md-3 align-self-stretch kt-mr-10">
-                      <div class="box-view position-item">
-                          <p class="display-6"><i class="icon-profile-male"></i></p>
-                        <p class="h4">{{ faction|length }}</p>
-                        <p>Jugadores</p>
-                      </div>
-                    </div>
-                    <div class="col-md-3 align-self-stretch kt-mr-10">
-                      <div class="box-view position-item">
-                          <p class="display-6"><i class="icon-trophy"></i></p>
-                        <p class="h4">{{ fctOnly.tournaments|length }}</p>
-                        <p>Torneos</p>
-                      </div>
-                    </div>
-                  </div>
                 </div>
             </div>
         </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-12 align-self-stretch">
-        <div class="box-view" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
-            <p class="title-box">Ranking</p>
-
-        <table class="fl-table">
-            <thead>
-            <tr>
-                <th style="width: 40%;">Nombre</th>
-                <th >Posición</th>
-                <th>Puntuación</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for fc in faction %}
-                <tr onclick="location.href='/user/{{ fc.UserFaction.userId }}';">
-                    {% for usr in fc.Faction.users %}
-                        {% if usr.id == fc.UserFaction.userId %}
-                            <td style="width: 40%;"><img src="{{ usr.profilePic }}" class="rounded-circle shadow-4 kt-avatar"
-                                                 alt="Avatar" /><small>{{ usr.bcpName | truncate(30, True, '...', 0) }}</small></td>
-                        {% endif %}
+        <div class="col-md-6 align-self-stretch">
+            <div class="box-view" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
+                <p class="title-box">Ranking</p>
+                <table class="fl-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40%;">Nombre</th>
+                            <th >Posición</th>
+                            <th>Puntuación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for fc in faction %}
+                        <tr onclick="location.href='/user/{{ fc.UserFaction.userId }}';">
+                            {% for usr in fc.Faction.users %}
+                                {% if usr.id == fc.UserFaction.userId %}
+                                    <td style="width: 40%;"><img src="{{ usr.profilePic }}" class="rounded-circle shadow-4 kt-avatar"
+                                                         alt="Avatar" /><small>{{ usr.bcpName | truncate(30, True, '...', 0) }}</small></td>
+                                {% endif %}
+                            {% endfor %}
+                            <td>{{ loop.index }}</td>
+                            <td>{{ '%0.2f'| format(fc.UserFaction.ibericonScore) }}</td>
+                        </tr>
                     {% endfor %}
-                    <td>{{ loop.index }}</td>
-                    <td>{{ '%0.2f'| format(fc.UserFaction.ibericonScore) }}</td>
-                </tr>
-            {% endfor %}
-            <tbody>
-        </table>
-
-      </div>
-    </div>
+                    <tbody>
+                </table>
+            </div>
+        </div>
     </div>
 {% endblock %}

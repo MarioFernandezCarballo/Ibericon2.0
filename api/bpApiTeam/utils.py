@@ -1,8 +1,7 @@
 from flask import current_app, jsonify
-
 from sqlalchemy import desc
-from database import Team, Tournament, UserTournament, Conference
 
+from database import Team, Tournament, UserTournament, Conference
 
 def getTeams(query, qty=0):
     result = Team.query
@@ -31,7 +30,6 @@ def getTeams(query, qty=0):
 
 
 def getTeam(query):
-    # TODO terminar esto cuando esté definido user y tournament
     cl = Team.query.filter_by(id=query.bcpId).first()
     if cl:
         res = current_app.config["database"].session.query(UserTournament, Tournament, Team

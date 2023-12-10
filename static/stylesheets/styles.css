@@ -274,8 +274,13 @@ header ul li a:hover::before{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    border-radius: 6px;
     margin-top: 10px;
     cursor: pointer;
+}
+tr:hover{
+    background-color: rgba(255,255,255,.1);
+    transition: 0.1s ease-in-out;
 }
 
 .box-view a.type-btn{
@@ -590,7 +595,12 @@ header ul li a:hover::before{
 .margin-right-20{
     margin-right: 20px;
 }
-
+.margin-right-5{
+    margin-right: 5px;
+}
+.margin-bottom-10{
+    margin-bottom: 10px;
+}
 
 .overlay {
     display: none;
@@ -965,19 +975,13 @@ padding: 1% 15%;
     margin: 30px 0 10px 0;
 }
 
-.r-n {
+.r-c {
     display: block;
 }
-.r-ne {
-    display: none;
-}
-.r-e {
-    display: none;
-}
-.r-c {
-    display: none;
-}
-.r-s {
+.r-s,
+.r-n,
+.r-ne,
+.r-e{
     display: none;
 }
 

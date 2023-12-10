@@ -1,5 +1,3 @@
-import tokenize
-
 from flask import current_app, jsonify
 
 from sqlalchemy import desc
@@ -44,7 +42,7 @@ def getClub(query):
                 "id": us.bcpId,
                 "name": us.bcpName,
                 "score": UserClub.query.filter_by(userId=us.id).filter_by(clubId=result.id).first().ibericonScore,
-                "profilePid": us.profilePic,  # TODO volcar imagen
+                "profilePid": us.profilePic,
                 "isClassified": us.isClassified
             } for us in result.users],
             "tournaments": [{
@@ -81,7 +79,7 @@ def modifyClub(query):
                     "data": {}
                 })
         if query.profilePic:
-            club.profilePic = query.profilePic  # TODO ver cómo volcar imagen en base de datos
+            club.profilePic = query.profilePic
             data['newPic'] = True
         current_app.config['database'].session.commit()
         return jsonify({

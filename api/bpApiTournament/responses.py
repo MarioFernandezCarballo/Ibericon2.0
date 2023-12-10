@@ -1,7 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List
 
-
 class Cities:
     class City(BaseModel):
         id: str = Field(None, description="Id")

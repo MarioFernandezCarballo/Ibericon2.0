@@ -1,39 +1,37 @@
+import os
+
+from flask import redirect, url_for, render_template, request, make_response, flash
 from flask_openapi3 import Info
 from flask_openapi3 import OpenAPI
-from flask_login import login_required
-from utils import createApp, createDatabase, decorators
+from flask_login import login_required, current_user
 
-# API
-from api.bpApiAdmin import adminApiBP
-from api.bpApiAuth import authApiBP
-from api.bpApiUser import userApiBP
-from api.bpApiClub import clubApiBP
-from api.bpApiFaction import factionApiBP
-from api.bpApiTeam import teamApiBP
-from api.bpApiTournament import tournamentApiBP
+import api
+from utils import (getUsers, getClubs, getAllTournaments, getUsersWinRate, getFactions, getUserConferencePosition,
+                   getUserFactions, getUserGlobalPosition, getUserOnly, getUserConference, getUserMostPlayedFaction,
+                   getUserMostPlayedClub, getUserLastFaction, getPastTournamentsByUser, getFutureTournamentsByUser,
+                   updateProfile, getConferences, updatePicture, updateStats, createApp, createDatabase, decorators,
+                   updateTeamPicture, getFactionOnly, getFaction, getClub, getClubOnly, getFutureTournaments,
+                   checkTournaments, getCities, updateThings, resetUserInfo, userLogin, userSignup)
+
 
 info = Info(title="Ibericon API", version="1.0.0")
 app = OpenAPI(__name__, info=info)
 
 # API
-app.register_api(adminApiBP)
-app.register_api(authApiBP)
-app.register_api(userApiBP)
-app.register_api(clubApiBP)
-app.register_api(factionApiBP)
-app.register_api(teamApiBP)
-app.register_api(tournamentApiBP)
+app.register_api(api.adminApiBP)
+app.register_api(api.authApiBP)
+app.register_api(api.userApiBP)
+app.register_api(api.clubApiBP)
+app.register_api(api.factionApiBP)
+app.register_api(api.teamApiBP)
+app.register_api(api.tournamentApiBP)
 
 app = createApp(app)
 createDatabase(app)
 
-# Ibericon 2.0
 # Generic
 @app.route('/', methods=['GET', 'POST'])
 def dashboard():
-    from flask import render_template, redirect, url_for
-    from flask_login import current_user
-    from utils import getUsers, getClubs, getAllTournaments
     if current_user.is_anonymous:
         return redirect(url_for('login'))
     usr = getUsers()
@@ -63,9 +61,6 @@ def dashboard():
     )
 @app.route("/ranking", methods={"GET", "POST"})
 def ranking():
-    from flask import render_template
-    from flask_login import current_user
-    from utils import getUsers, getClubs
     usr = getUsers()
     cls = getClubs()
     usr = [{"id": u.id, "conference": u.conference, "profilePic": u.profilePic, "bcpName": u.bcpName, "ibericonScore": u.ibericonScore} for u in usr]
@@ -85,9 +80,6 @@ def ranking():
     )
 @app.route("/winrates", methods={"GET", "POST"})
 def winRatesEndPoint():
-    from flask import render_template
-    from flask_login import current_user
-    from utils import getUsersWinRate, getFactions
     usr = getUsersWinRate()
     fctO, _ = getFactions()
     usr = [{"id": u.id, "profilePic": u.profilePic, "bcpName": u.bcpName, "winRate": u.winRate} for u in usr if u.winRate]
@@ -105,11 +97,6 @@ def winRatesEndPoint():
 # User
 @app.route("/user/<us>", methods={"GET", "POST"})
 def userEndPoint(us):
-    from flask import render_template, redirect, url_for
-    from flask_login import current_user
-    from utils import getUserConferencePosition, getUserFactions, getUserGlobalPosition, getUserOnly, getUserConference, \
-        getUserMostPlayedFaction, getUserMostPlayedClub, getUserLastFaction, getPastTournamentsByUser, \
-        getFutureTournamentsByUser
     if not current_user.is_anonymous:
         if int(us) == current_user.id:
             return redirect(url_for('position'))
@@ -124,10 +111,13 @@ def userEndPoint(us):
         past = getPastTournamentsByUser(usr)
         globalClass = getUserGlobalPosition(usr)
         conferenceClass = getUserConferencePosition(usr)
+        future = [{"img": t.imgUri, "name": t.name, "id": t.id, "position": t.date} for t in future]
+        past = [{"img": t["tournament"].imgUri, "name": t['tournament'].name, "id": t['tournament'].id, "position": t['userTournament'].position} for t in past]
+        ratesFactions = [{"name": f.Faction.name, "id": f.Faction.id, "position": "%.2f" % f.UserFaction.winRate} for f in ratesFactions]  # TODO add image
         return render_template(
             'user.html',
             title=usr.bcpName,
-            subtitle="Perfil de " + usr.bcpName,
+            subtitle="Posición de " + usr.bcpName,
             conference=conference,
             last=lastFaction,
             common=mostCommon,
@@ -141,12 +131,10 @@ def userEndPoint(us):
             user=current_user if not current_user.is_anonymous else None
         )
     return redirect(url_for('dashboard'))
+
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
-    from flask import render_template, request, redirect, url_for
-    from flask_login import current_user
-    from utils import getUserOnly, getUserConference, updateProfile, getUserMostPlayedFaction, getUserMostPlayedClub, getUserLastFaction, getConferences
     if request.method == 'POST':
         updateProfile(current_user, request.form)
         return redirect(url_for('profile'))
@@ -173,9 +161,6 @@ def profile():
 @app.route('/new-image', methods=['POST'])
 @login_required
 def newImage():
-    from flask import make_response, request
-    from flask_login import current_user
-    from utils import updatePicture
     if request.method == 'POST':
         return make_response("result", updatePicture(current_user, request.files))
     return make_response("Not ok", 400)
@@ -183,17 +168,12 @@ def newImage():
 @login_required
 @decorators.only_team_leader
 def newTeamImage(cl):
-    from flask import make_response, request
-    from utils import updateTeamPicture
     if request.method == 'POST':
         return make_response("result", updateTeamPicture(cl, request.files))
     return make_response("Not ok", 400)
 @app.route('/position', methods=['GET', 'POST'])
 @login_required
 def position():
-    from flask import render_template, redirect, url_for
-    from flask_login import current_user
-    from utils import getUserConferencePosition, getUserFactions, getUserGlobalPosition, getUserOnly, getUserConference, getUserMostPlayedFaction, getUserMostPlayedClub, getUserLastFaction, getPastTournamentsByUser, getFutureTournamentsByUser
     usr = getUserOnly(current_user.id)
     if usr:
         conference = getUserConference(usr.conference)
@@ -228,9 +208,6 @@ def position():
 # Faction
 @app.route("/faction/<fact>", methods={"GET"})
 def factionEndPoint(fact):
-    from flask import render_template
-    from flask_login import current_user
-    from utils import getFactionOnly, getFaction
     faction = getFactionOnly(fact)
     fct = getFaction(fact)
     return render_template(
@@ -243,9 +220,6 @@ def factionEndPoint(fact):
     )
 @app.route("/factions", methods={"GET"})
 def factionsEndPoint():
-    from flask import render_template
-    from flask_login import current_user
-    from utils import getFactions
     fct, usrFct = getFactions()
     return render_template(
         'factions.html',
@@ -258,9 +232,6 @@ def factionsEndPoint():
 # Club
 @app.route("/club/<cl>", methods={"GET"})
 def clubEndPoint(cl):
-    from flask import render_template
-    from flask_login import current_user
-    from utils import getClubOnly, getClub, getClubs
     club = getClubOnly(cl)
     clTor = getClub(cl)
     position = getClubs().index(club) + 1
@@ -276,10 +247,6 @@ def clubEndPoint(cl):
 #Auth
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    from flask import request, render_template
-    from flask_login import current_user
-    from utils.auth import userLogin
-    from utils.city import getCities
     cities = getCities()
     if request.method == 'POST':
         response, _ = userLogin(request.form)
@@ -287,10 +254,6 @@ def login():
     return render_template('landing.html', title="Login", cities=cities, user=current_user if not current_user.is_anonymous else None)
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    from flask import request, render_template
-    from flask_login import current_user
-    from utils.auth import userSignup
-    from utils.city import getCities
     cities = getCities()
     if request.method == 'POST':
         response, _ = userSignup(request.form)
@@ -299,38 +262,28 @@ def signup():
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required
 def logout():
-    from utils.auth import resetUserInfo
     response, _ = resetUserInfo()
     return response
 #Admin
 @app.route('/get-tournaments', methods=['GET'])
 @decorators.only_collaborator
 def getTournaments():
-    from flask import redirect, url_for
-    from utils.admin import getFutureTournaments
     getFutureTournaments()
     return redirect(url_for('dashboard'))
 @app.route('/check-tournaments', methods=['GET'])
 @decorators.only_collaborator
 def checkTournamentsAdmin():
-    from flask import redirect, url_for
-    from utils.admin import checkTournaments
     checkTournaments()
     return redirect(url_for('dashboard'))
 @app.route('/update-stats', methods=['GET'])
 @decorators.only_collaborator
 def updateStatsAdmin():
-    from flask import redirect, url_for
-    from utils.admin import updateStats
     updateStats()
     return redirect(url_for('dashboard'))
 @app.route("/add/tournament", methods={"GET", "POST"})
 @login_required
 @decorators.only_collaborator
 def addNewTournamentAdmin():
-    from flask import request, flash, render_template, redirect, url_for
-    from flask_login import current_user
-    from utils.admin import updateStats
     from api.bpApiAdmin.utils import newTournamentApi
     if request.method == 'POST':
         response = newTournamentApi(request.form['uri'])
@@ -352,9 +305,6 @@ def addNewTournamentAdmin():
 @login_required
 @decorators.only_collaborator
 def collaboratorAdmin():
-    from flask import request, flash, render_template, redirect, url_for
-    from flask_login import current_user
-    from utils.admin import updateThings
     if request.method == 'POST':
         response = updateThings(request.form)
         if response.status == 200:
@@ -370,8 +320,6 @@ def collaboratorAdmin():
     )
 @app.route('/update_server', methods=['POST'])
 def webhook():
-    import os
-    from flask import request
     if request.method == 'POST':
         os.system('bash ib2-command-pull-event.sh')
         return 'Updated PythonAnywhere successfully', 200
@@ -381,9 +329,6 @@ def webhook():
 # Tournaments
 @app.route("/tournaments", methods={"GET", "POST"})
 def tournamentsEndPoint():
-    from flask import render_template
-    from flask_login import current_user
-    from utils import getAllTournaments
     tournaments = getAllTournaments()
     tors = [{
         "bcpUri": u.Tournament.bcpUri,
@@ -420,8 +365,7 @@ if __name__ == '__main__':
     app.run(host=app.config['HOST'], port=app.config['PORT'], debug=app.config['DEBUG'])
 
 # TODO mysql
+#  facciones, facción y perfil
 #  tipografía - itc machine std para los titulares
 #  me manda los dos moñecos y los pongo bien
-#  hover en opciones
-#  sacar detalles del torneo y hacerlo más one page app
-#  Terminar futuros torneos como los rankings de conferencia.
+#  sacar detalles del torneo
