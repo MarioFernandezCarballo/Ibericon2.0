@@ -190,6 +190,7 @@ header ul li a:hover::before{
     padding: 10px 20px 20px 20px;
 }
 .user-actions p{
+    font-family: "Machine";
     font-size: 20px;
     font-weight: 600;
     color: #1A2D2F;
@@ -1098,6 +1099,10 @@ padding: 1% 15%;
     }
     .row-map{
         flex-direction: column-reverse;
+    }
+
+    .fct-info{
+        display: block;
     }
 }
 @media(max-width:1000px){
