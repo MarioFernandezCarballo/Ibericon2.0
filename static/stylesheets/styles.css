@@ -969,7 +969,6 @@ padding: 1% 15%;
 .fct-selector{
     display: flex;
     flex-wrap: wrap;
-    width: 50%;
     align-content: center;
     align-items: center;
     justify-content: center;

@@ -65,7 +65,7 @@
                             // Get user data from Flask template
                             var users = {{ fct.users | tojson | safe }};
 
-                            var itemsPerPage = Math.floor(window.innerHeight * 10 / 1400);
+                            var itemsPerPage = Math.floor(window.innerHeight * 14 / 1400);
                             var currentPage = 1;
 
                             function renderTable(start, end, list, className) {
@@ -163,10 +163,26 @@
             </div>
         </div>
     {% endfor %}
-    <div class="fct-selector">
-        {% for fct in factions %}
-            <img src="{{ fct.imgSelector }}" class="rounded-circle shadow-4 kt-avatar"/>
-        {% endfor %}
+    <div class="map-detail">
+        <div class="fct-selector">
+            {% for fct in factions %}
+                <img src="{{ fct.imgSelector }}" onclick="toggleView( '{{ fct.id }}' )" class="rounded-circle shadow-4 kt-avatar"/>
+            {% endfor %}
+        </div>
     </div>
 </div>
+<script>
+    window.onload = function() {
+      var faction = document.getElementById("pU36RuQWCD")
+      faction.style.display = 'block';
+    };
+    function toggleView(fct) {
+        var fcts = document.getElementsByClassName("fct-info");
+        Array.from(fcts).forEach((f) => {
+            f.style.display = 'none';
+        });
+        var toShow = document.getElementById(fct);
+        toShow.style.display = 'block';
+    }
+</script>
 {% endblock %}
