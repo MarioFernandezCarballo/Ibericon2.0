@@ -32,27 +32,21 @@
                         <p class="h6"><small>Última facción jugada: </small><strong>{{ last.name }}</strong></p>
                     </div>
                 </div>
+                <form class="profile-form" action="/profile" method="post">
+                    <input placeholder="Nombre" type="text" name="name" id="name">
+                    <input placeholder="Mail (Sólo para comunicaciones)" type="email" name="email" id="email">
+                    <select style="display: none" name="conference" id="conference">
+                        {% for conf in conferences %}
+                            {% if conf.id == usr.conference %}
+                                <option value="{{ conf.id }}" selected>{{ conf.name }}</option>
+                            {% else %}
+                                <option value="{{ conf.id }}">{{ conf.name }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="type-btn mt-4">Actualizar</button>
+                </form>
             </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-12 align-self-stretch ma">
-        <div class="box-view box-view-profile" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
-            <form class="profile-form" action="/profile" method="post">
-                <input placeholder="Nombre" type="text" name="name" id="name">
-                <input placeholder="Mail (Sólo para comunicaciones)" type="email" name="email" id="email">
-                <select style="display: none" name="conference" id="conference">
-                    {% for conf in conferences %}
-                        {% if conf.id == usr.conference %}
-                            <option value="{{ conf.id }}" selected>{{ conf.name }}</option>
-                        {% else %}
-                            <option value="{{ conf.id }}">{{ conf.name }}</option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
-                <button type="submit" class="type-btn mt-4">Actualizar</button>
-            </form>
         </div>
       </div>
     </div>

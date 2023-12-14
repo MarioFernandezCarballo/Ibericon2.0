@@ -4,8 +4,8 @@ from sqlalchemy import desc, asc
 
 
 def getFaction(fct):
-    return current_app.config["database"].session.query(Faction, UserFaction).join(UserFaction).filter(
-        Faction.id == fct).filter(UserFaction.ibericonScore > 0.0).order_by(desc(UserFaction.ibericonScore)).all()
+    return current_app.config["database"].session.query(UserFaction, User).filter(UserFaction.factionId == fct).filter(UserFaction.userId == User.id).order_by(
+        desc(UserFaction.ibericonScore)).all()
 
 
 def getFactionOnly(fct):

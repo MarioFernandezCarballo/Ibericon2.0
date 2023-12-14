@@ -83,8 +83,8 @@ def winRatesEndPoint():
     usr = getUsersWinRate()
     fctO, _ = getFactions()
     usr = [{"id": u.id, "profilePic": u.profilePic, "bcpName": u.bcpName, "winRate": u.winRate} for u in usr if u.winRate]
-    fct = [{"id": f.id, "bcpName": f.name, "winRate": f.winRate} for f in sorted(fctO, key=lambda d: d.winRate, reverse=True) if f.winRate]  # TODO add img
-    fctPr = [{"id": f.id, "bcpName": f.name, "winRate": f.pickRate} for f in sorted(fctO, key=lambda d: d.pickRate, reverse=True) if f.pickRate]  # TODO add img
+    fct = [{"id": f.id, "bcpName": f.name, "winRate": f.winRate, "profilePic": url_for('static', filename="factions/white/" + f.shortName + ".svg")} for f in sorted(fctO, key=lambda d: d.winRate, reverse=True) if f.winRate]
+    fctPr = [{"id": f.id, "bcpName": f.name, "winRate": f.pickRate, "profilePic": url_for('static', filename="factions/white/" + f.shortName + ".svg")} for f in sorted(fctO, key=lambda d: d.pickRate, reverse=True) if f.pickRate]
     return render_template(
         'winrates.html',
         title="Winrates",
@@ -113,7 +113,7 @@ def userEndPoint(us):
         conferenceClass = getUserConferencePosition(usr)
         future = [{"img": t.imgUri, "name": t.name, "id": t.id, "position": t.date} for t in future]
         past = [{"img": t["tournament"].imgUri, "name": t['tournament'].name, "id": t['tournament'].id, "position": t['userTournament'].position} for t in past]
-        ratesFactions = [{"name": f.Faction.name, "id": f.Faction.id, "position": "%.2f" % f.UserFaction.winRate} for f in ratesFactions]  # TODO add image
+        ratesFactions = [{"name": f.Faction.name, "id": f.Faction.id, "position": "%.2f" % f.UserFaction.winRate, "img": url_for('static', filename="factions/white/" + f.Faction.shortName + ".svg")} for f in ratesFactions]  # TODO add image
         return render_template(
             'user.html',
             title=usr.bcpName,
@@ -187,7 +187,7 @@ def position():
         conferenceClass = getUserConferencePosition(usr)
         future = [{"img":t.imgUri, "name": t.name, "id": t.id, "position": t.date} for t in future]
         past = [{"img":t["tournament"].imgUri, "name": t['tournament'].name, "id": t['tournament'].id, "position": t['userTournament'].position} for t in past]
-        ratesFactions = [{"name": f.Faction.name, "id": f.Faction.id, "position": "%.2f" % f.UserFaction.winRate} for f in ratesFactions]  # TODO add image
+        ratesFactions = [{"name": f.Faction.name, "id": f.Faction.id, "position": "%.2f" % f.UserFaction.winRate, "img": url_for('static', filename="factions/white/" + f.Faction.shortName + ".svg")} for f in ratesFactions]
         return render_template(
             'position.html',
             title=usr.bcpName,
@@ -210,6 +210,7 @@ def position():
 def factionEndPoint(fact):
     faction = getFactionOnly(fact)
     fct = getFaction(fact)
+    fct = [{"bcpName": u.User.bcpName, "profilePic": u.User.profilePic, "ibericonScore": u.UserFaction.ibericonScore} for u in fct]
     return render_template(
         'faction.html',
         title=faction.name,
@@ -221,6 +222,24 @@ def factionEndPoint(fact):
 @app.route("/factions", methods={"GET"})
 def factionsEndPoint():
     fct, usrFct = getFactions()
+    fct = [{
+        "id": f.bcpId,
+        "name": f.name,
+        "winRate": f.winRate,
+        "pickRate": f.pickRate,
+        "img": url_for('static', filename="factions/white/" + f.shortName + ".svg"),
+        "imgSelector": url_for('static', filename="factions/black/" + f.shortName + ".svg"),
+        "tournaments": len(f.tournaments),
+        "renderingInfo": {
+            "paginationId": f.bcpId + "Pagination",
+            "bodyId": f.bcpId + "Body"
+        },
+        "users": [{
+            "bcpName": u.User.bcpName,
+            "profilePic": u.User.profilePic,
+            "ibericonScore": u.UserFaction.ibericonScore
+        } for u in getFaction(f.id)]
+    } for f in fct]
     return render_template(
         'factions.html',
         title="Facciones",

@@ -4,11 +4,15 @@
     --primari-white:#EBEAEA;
 }
 @font-face {
-  font-family: 'Machine';
-  src: url("stylesheets/fonts/MachineStd.otf") format("opentype");
+  font-family:"Machine";
+  src: url("fonts/MachineStd.ttf") format("truetype");
+}
+@font-face {
+  font-family:"Myanmar";
+  src: url("fonts/NotoSansMyanmar-Regular.ttf") format("truetype");
 }
 *{
-    font-family: "Noto Sans Myanmar", sans-serif;
+    font-family: "Myanmar";
 }
 
 body.stoped{
@@ -316,6 +320,7 @@ tr:hover{
     margin: auto 0 10px 0;
 }
 .box-view .title-box{
+    font-family: "Machine";
     font-size: 30px;
     font-weight: 600;
     color: var(--primari-white);
@@ -507,9 +512,12 @@ tr:hover{
 }
 .profile-container {
     display: flex;
+    justify-content: space-evenly;
     align-items: center;
+    width: 100%;
 }
-.position-container{
+.position-container,
+.position-container-fct{
     display: flex;
     align-items: center;
     width: 100%;
@@ -537,7 +545,7 @@ tr:hover{
     border-bottom: 0px solid var(--primari-white) !important;
 }
 .profile-form{
-    width: 50%;
+    width: 30%;
     align-self: center;
     display: flex;
     flex-direction: column;
@@ -985,6 +993,23 @@ padding: 1% 15%;
     display: none;
 }
 
+.fct-info{
+    display: none;
+}
+.fct-selector{
+    display: flex;
+    flex-wrap: wrap;
+    width: 50%;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+}
+.fct-selector img {
+    width: 15%;
+    height: auto;
+    transition: 0.3s ease-in-out;
+}
+
 @media(max-width:1200px){
 .row {
     justify-content: center;
@@ -1048,6 +1073,9 @@ padding: 1% 15%;
         left: 60%;
         height: 40px;
         width: 40px;
+    }
+    .fct-selector{
+        display: none;
     }
 }
 @media(max-width:1000px){
