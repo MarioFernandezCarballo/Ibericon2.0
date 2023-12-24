@@ -386,7 +386,6 @@ if __name__ == '__main__':
 # TODO
 #  Incluir bases (Nass)
 #  boton atras
-#  Hacer cursor pointer en iconos de facciones y agrandarlos on hover
 
 # TODO Futuro
 #  mysql
