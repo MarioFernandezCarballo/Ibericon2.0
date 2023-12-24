@@ -206,9 +206,7 @@
             let user = list[i];
             if (user) {
                 var row = document.createElement('tr');
-                row.onclick = function () {
-                    location.href = user.bcpUri;
-                };
+                row.onclick = () => {window.open(user.bcpUri, '_blank')};
 
                 var nameCell = document.createElement('td');
                 nameCell.style.width = '60%';

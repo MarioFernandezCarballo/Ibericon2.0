@@ -19,28 +19,28 @@
                   <div style="margin-top: 15px;" class="position-info">
                     <div class="col-md-3 align-self-stretch kt-mr-10">
                       <div class="box-view position-item">
-                          <p class="display-6"><i class="icon-bargraph"></i></p>
+                          <img src="{{ url_for('static', filename='icons/ICONOS_WEB_ICON_NEGRO/ICONOS_WEB_ICON_NEGRO_POSICION_IBERICON.png') }}">
                         <p class="h4">{{ globalClass }}º</p>
                         <p>Ibericon</p>
                       </div>
                     </div>
                       <div class="col-md-3 align-self-stretch kt-mr-10">
                       <div class="box-view position-item">
-                          <p class="display-6"><i class="icon-bargraph"></i></p>
+                          <img src="{{ url_for('static', filename='icons/ICONOS_WEB_ICON_NEGRO/ICONOS_WEB_ICON_NEGRO_POSICION_CONFERENCIA.png') }}">
                         <p class="h4">{{ conferenceClass }}º</p>
                         <p>Conferencia</p>
                       </div>
                     </div>
                     <div class="col-md-3 align-self-stretch kt-mr-10">
                       <div class="box-view position-item">
-                          <p class="display-6"><i class="icon-trophy"></i></p>
+                          <img src="{{ url_for('static', filename='icons/ICONOS_WEB_ICON_NEGRO/ICONOS_WEB_ICON_NEGRO_NUMERO_DE_TORNEOS.png') }}">
                         <p class="h4">{{ usr.tournaments|length }}</p>
                         <p>Torneos</p>
                       </div>
                     </div>
                     <div class="col-md-3 align-self-stretch kt-mr-10">
                       <div class="box-view position-item">
-                        <p class="display-6"><i class="icon-piechart"></i></p>
+                        <img src="{{ url_for('static', filename='icons/ICONOS_WEB_ICON_NEGRO/ICONOS_WEB_ICON_NEGRO_WINRATE.png') }}">
                         <p class="h4">{{ '%0.2f'| format(usr.winRate) }}%</p>
                         <p>Winrate</p>
                       </div>
@@ -133,9 +133,7 @@
             let user = list[i];
             if (user) {
                 var row = document.createElement('tr');
-                row.onclick = function () {
-                    location.href = user.bcpUri;
-                };
+                row.onclick = () => {window.open(user.bcpUri, '_blank')};
                 if (className == 'faction-body') {
                     row.onclick = function () {
                         location.href = '/faction/' + user.id;

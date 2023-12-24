@@ -44,10 +44,10 @@
 
 <section id="contianerAll">
   <div class="user-actions">
-      <p>{{ subtitle }}</p>
+      <p class="subtitle">{{ subtitle }}</p>
       <div class="dropdown alerts">
           {% if user %}
-            <p>{{ user.bcpName | truncate(30, True, '...', 0) }}</p>
+            <p class="username">{{ user.bcpName | truncate(30, True, '...', 0) }}</p>
           {% endif %}
           <!--<input type="search" placeholder="Buscar">
           <button  type="button" data-bs-toggle="dropdown" aria-expanded="false">

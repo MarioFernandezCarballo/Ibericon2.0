@@ -29,33 +29,33 @@
                 <div class="profile-info grow-down">
                     <div>
                         <p class="h2"><strong>{{ club.name }}</strong></p>
-                        <p class="h6"><small>Conferencia: </small><strong>{{ club.conference }}</strong></p>
                     </div>
                   <div style="margin-top: 15px;" class="position-info">
                       <div class="col-md-3 align-self-stretch kt-mr-10">
                       <div class="box-view position-item">
-                          <p class="display-6"><i class="icon-profile-male"></i></p>
+                          <img src="{{ url_for('static', filename='icons/ICONOS_WEB_ICON_NEGRO/ICONOS_WEB_ICON_NEGRO_JUGADORES.png') }}">
                         <p class="h4">{{ club.users | length }}</p>
                         <p>Jugadores</p>
                       </div>
                     </div>
                     <div class="col-md-3 align-self-stretch kt-mr-10">
                       <div class="box-view position-item">
-                          <p class="display-6"><i class="icon-bargraph"></i></p>
+                          <img src="{{ url_for('static', filename='icons/ICONOS_WEB_ICON_NEGRO/ICONOS_WEB_ICON_NEGRO_POSICION_IBERICON.png') }}">
                         <p class="h4">{{ position }}º</p>
                         <p>Ibericon</p>
                       </div>
                     </div>
                       <div class="col-md-3 align-self-stretch kt-mr-10">
                       <div class="box-view position-item">
-                          <p class="display-6"><i class="icon-bargraph"></i></p>
+                          <img src="{{ url_for('static', filename='icons/ICONOS_WEB_ICON_NEGRO/ICONOS_WEB_ICON_NEGRO_POSICION_CONFERENCIA.png') }}">
                         <p class="h4">{{ '%0.2f'| format(club.ibericonScore) }}</p>
                         <p>Puntuación</p>
                       </div>
                     </div>
                     <div class="col-md-3 align-self-stretch kt-mr-10">
                       <div class="box-view position-item">
-                          <p class="display-6"><i class="icon-trophy"></i></p>
+
+                        <img src="{{ url_for('static', filename='icons/ICONOS_WEB_ICON_NEGRO/ICONOS_WEB_ICON_NEGRO_NUMERO_DE_TORNEOS.png') }}">
                         <p class="h4">{{ club.tournaments|length }}</p>
                         <p>Torneos</p>
                       </div>
