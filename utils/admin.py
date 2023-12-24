@@ -123,7 +123,7 @@ def manageTournament(info):
         else:
             location = info['formatted'] + ' ' + info['streetNum'] + ' - ' + info['city']
     except KeyError:
-        return None
+        location = city.name
     current_app.config['database'].session.add(Tournament(
         bcpId=info['id'],
         bcpUri="https://www.bestcoastpairings.com/event/" + info['id'],
