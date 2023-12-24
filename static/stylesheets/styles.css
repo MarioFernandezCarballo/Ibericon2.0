@@ -15,6 +15,13 @@
     font-family: "Myanmar";
 }
 
+html{
+    height: 100%;
+}
+body {
+    min-height: 100%;
+}
+
 body.stoped{
     overflow: hidden;
 }
@@ -1048,7 +1055,16 @@ tr:hover{
     margin-bottom: 10px;
 }
 .position-item p {
-    font-size: 32px;
+    font-size: 26px;
+}
+.profile-info .h2 strong{
+    font-family: "Machine";
+}
+.faction-avatar{
+    transition: transform 0.1s ease-in-out;
+}
+.faction-avatar:hover{
+    transform: scale(1.2);
 }
 
 @media(max-width:1200px){
@@ -1150,6 +1166,12 @@ tr:hover{
     }
 }
 @media(max-width:768px){
+    .grow-down {
+        flex: auto;
+    }
+    .general-information{
+        font-size: 28px;
+    }
     .subtitle{
         font-size: 30px !important;
     }
@@ -1309,10 +1331,10 @@ tr:hover{
         aspect-ratio: 1.3
     }
     .col-md-3 p {
-        font-size: x-small;
+        font-size: small !important;
     }
     .position-item p {
-        font-size: large;
+        font-size: large !important;
     }
     .box-view .icon-general {
         width: 45px !important;
@@ -1326,7 +1348,6 @@ tr:hover{
     }
 }
 @media(max-width: 325px){
-
     .icon-general {
         width: 40px !important;
     }
