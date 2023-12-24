@@ -15,14 +15,7 @@
     font-family: "Myanmar";
 }
 
-html{
-    height: 100%;
-}
-body {
-    min-height: 100%;
-}
-
-body.stoped{
+body.stopped{
     overflow: hidden;
 }
 
