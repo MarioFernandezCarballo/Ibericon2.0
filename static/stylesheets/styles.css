@@ -15,14 +15,21 @@
     font-family: "Myanmar";
 }
 
-body.stopped{
+html{
+    height: 100%;
+}
+body {
+    min-height: 100%;
+}
+
+body.stoped{
     overflow: hidden;
 }
 
 p{
     margin-bottom: 4px;
     font-size: 18px;
-    
+
 }
 td{
     white-space: nowrap;
@@ -176,7 +183,7 @@ header ul li a:hover::before{
     background-repeat: no-repeat;
     background-position: center center;
     background-size:cover;
-    
+
 }
 
 .user-actions{
@@ -214,7 +221,7 @@ header ul li a:hover::before{
     left: 50%;
     transform: translate(-50%, -50%);
     width: 12px;
-} 
+}
 
 .user-actions .alerts button{
     position: relative;
@@ -449,7 +456,7 @@ tr:hover{
 
 
 /* USERS */
-.grow-down {
+.grow-down{
     flex: 1;
 }
 .users-col {
@@ -1159,8 +1166,8 @@ tr:hover{
     }
 }
 @media(max-width:768px){
-    .grow-down {
-        flex: auto;
+    .interface {
+        display: block;
     }
     .general-information{
         font-size: 28px;
