@@ -385,7 +385,6 @@ if __name__ == '__main__':
 
 # TODO
 #  Incluir bases (Nass)
-#  boton atras
 
 # TODO Futuro
 #  mysql

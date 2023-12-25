@@ -1060,10 +1060,10 @@ tr:hover{
 .profile-info .h2 strong{
     font-family: "Machine";
 }
-.faction-avatar{
+.make-bigger{
     transition: transform 0.1s ease-in-out;
 }
-.faction-avatar:hover{
+.make-bigger:hover{
     transform: scale(1.2);
 }
 .back-button {
