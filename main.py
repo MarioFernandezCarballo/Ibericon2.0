@@ -94,6 +94,7 @@ def winRatesEndPoint():
         factionsPick=fctPr,
         user=current_user if not current_user.is_anonymous else None
     )
+
 # User
 @app.route("/user/<us>", methods={"GET", "POST"})
 def userEndPoint(us):
@@ -131,7 +132,6 @@ def userEndPoint(us):
             user=current_user if not current_user.is_anonymous else None
         )
     return redirect(url_for('dashboard'))
-
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
@@ -205,6 +205,7 @@ def position():
             user=current_user if not current_user.is_anonymous else None
         )
     return redirect(url_for('dashboard'))
+
 # Faction
 @app.route("/faction/<fact>", methods={"GET"})
 def factionEndPoint(fact):
@@ -248,6 +249,7 @@ def factionsEndPoint():
         factions=fct,
         usrFct=usrFct
     )
+
 # Club
 @app.route("/club/<cl>", methods={"GET"})
 def clubEndPoint(cl):
@@ -263,6 +265,7 @@ def clubEndPoint(cl):
         clTor=clTor,
         user=current_user if not current_user.is_anonymous else None
     )
+
 #Auth
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -283,6 +286,7 @@ def signup():
 def logout():
     response, _ = resetUserInfo()
     return response
+
 #Admin
 @app.route('/get-tournaments', methods=['GET'])
 @decorators.only_collaborator
@@ -384,7 +388,7 @@ if __name__ == '__main__':
     app.run(host=app.config['HOST'], port=app.config['PORT'], debug=app.config['DEBUG'])
 
 # TODO
-#  Incluir bases (Nass)
+#  problema con los torneos gabachos
 
 # TODO Futuro
 #  mysql

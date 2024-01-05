@@ -21,19 +21,19 @@ def newTournamentApi(uri):
         uri = current_app.config["BCP_API_EVENT"].replace("####event####", eventId)
         response = requests.get(uri, headers=current_app.config["BCP_API_HEADERS"])
         info = json.loads(response.text)
-        if not info['ended']:
-            return jsonify({
-                "status": 401,
-                "message": "Tournament is not ended",
-                "data": {}
-            })
+        #if not info['ended']:
+        #    return jsonify({
+        #        "status": 401,
+        #        "message": "Tournament is not ended",
+        #        "data": {}
+        #    })
         if Tournament.query.filter_by(bcpId=info['id']).first():
             return jsonify({
                 "status": 401,
                 "message": "Tournament already exists",
                 "data": {}
             })
-        tor, result = newTournament(info, finished=True)
+        tor, result = newTournament(info)
         if result == 200:
             return jsonify({
                 "status": 200,

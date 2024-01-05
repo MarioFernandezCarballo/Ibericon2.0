@@ -17,7 +17,7 @@ def checkTournaments():
             tor = Tournament.query.filter_by(bcpId=info['id']).first()
             if tor:
                 _ = deleteTournament(tor)
-            newTournament(info, finished=True)
+            newTournament(info)
 
 
 def getFutureTournaments():
@@ -93,7 +93,8 @@ def algorithm(user, totalUsers):
     return finalPoints * playerModifier * roundModifier
 
 
-def newTournament(tor, finished=False):
+def newTournament(tor):
+    finished = tor['ended']
     if finished:
         uri = current_app.config["BCP_API_EVENT"].replace("####event####", tor['id'])
     else:
@@ -116,14 +117,13 @@ def newTournament(tor, finished=False):
 
 def manageTournament(info):
     isTeamTournament = info['teamEvent']
+    city = City.query.filter_by(name=current_app.config["CITIES"][info['zip'][0:2]]).first()
     try:
-        city = City.query.filter_by(name=current_app.config["CITIES"][info['zip'][0:2]]).first()
         if 'formatted_address' in info.keys():
             location = info['formatted_address']
         else:
             location = info['formatted'] + ' ' + info['streetNum'] + ' - ' + info['city']
     except KeyError:
-        city = City.query.first()
         location = city.name
     current_app.config['database'].session.add(Tournament(
         bcpId=info['id'],
