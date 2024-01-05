@@ -236,6 +236,7 @@ def factionsEndPoint():
             "bodyId": f.bcpId + "Body"
         },
         "users": [{
+            "id": u.User.id,
             "bcpName": u.User.bcpName,
             "profilePic": u.User.profilePic,
             "ibericonScore": u.UserFaction.ibericonScore
