@@ -91,7 +91,7 @@
             </thead>
             <tbody>
             {% for to in tournaments[:10] %}
-                <tr onclick="location.href='{{ to.bcpUri }}';">
+                <tr onclick="window.open('{{ to.bcpUri }}', '_blank');">
                   <td style="width: 70%;"><img src="{{ to.imgUri }}" class="rounded-circle shadow-4 kt-avatar"
                                                  alt="Avatar" /><small>{{ to.name | truncate(15, True, '...', 0) }}</small></td>
                   <td><small>{{ to.date }}</small></td>

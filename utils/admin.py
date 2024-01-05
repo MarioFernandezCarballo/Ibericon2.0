@@ -264,6 +264,9 @@ def updateStats():
         for fct in usr.factions:
             tournaments = UserTournament.query.filter_by(userId=usr.id).filter_by(factionId=fct.id).all()
             usrFct = UserFaction.query.filter_by(userId=usr.id).filter_by(factionId=fct.id).first()
+            usrFct.won = 0
+            usrFct.tied = 0
+            usrFct.lost = 0
             for to in tournaments:
                 if to.position:
                     usrFct.won += to.won
@@ -273,8 +276,6 @@ def updateStats():
                 usrFct.winRate = 100*usrFct.won / (usrFct.won + usrFct.tied + usrFct.lost)
             except ZeroDivisionError:
                 usrFct.winRate = 0.0
-
-
         best = current_app.config['database'].session.query(UserTournament, Tournament).order_by(desc(UserTournament.ibericonScore)).filter(
             UserTournament.userId == usr.id).join(Tournament, Tournament.id == UserTournament.tournamentId).all()
         score = 0
