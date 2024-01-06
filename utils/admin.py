@@ -117,7 +117,7 @@ def newTournament(tor):
 
 def manageTournament(info):
     isTeamTournament = info['teamEvent']
-    city = City.query.filter_by(name=current_app.config["CITIES"][info['zip'][0:2]]).first()
+    city = City.query.filter_by(name=current_app.config["CITIES"]['33']).first()  # [info['zip'][0:2]]).first()
     try:
         if 'formatted_address' in info.keys():
             location = info['formatted_address']
