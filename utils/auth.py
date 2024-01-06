@@ -117,6 +117,7 @@ def userLogin(form):
         if check_password_hash(user.password, form['password']):
             city = City.query.filter_by(id=user.city).first()
             # Create a response with user information and set cookies
+            flash("OK", 'info')
             response = redirect(url_for('dashboard'))
             responseApi = jsonify({
                 "status": 200,
@@ -130,7 +131,7 @@ def userLogin(form):
                 }
             })
             return setUserInfo(response, user), setUserInfo(responseApi, user)
-    flash("Could not verify")
+    flash("Could not verify", 'error')
     return redirect(url_for('login')), jsonify({
         "status": 401,
         "message": "Could not verify",

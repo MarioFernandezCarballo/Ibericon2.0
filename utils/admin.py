@@ -395,6 +395,16 @@ def updateThings(form):
     with open("secret/config.json", 'w') as conf:
         json.dump(config, conf, indent=4)
         conf.close()
-
-
     return make_response("OK", 200)
+
+
+def resetUser(userEmail):
+    u = User.query.filter_by(bcpMail=userEmail).first()
+    if u:
+        u.bcpMail = None
+        u.infoMail = None
+        u.password = None
+        u.registered = False
+        current_app.config['database'].session.commit()
+        return 200
+    return 404

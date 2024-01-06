@@ -11,7 +11,7 @@ from utils import (getUsers, getClubs, getAllTournaments, getUsersWinRate, getFa
                    getUserMostPlayedClub, getUserLastFaction, getPastTournamentsByUser, getFutureTournamentsByUser,
                    updateProfile, getConferences, updatePicture, updateStats, createApp, createDatabase, decorators,
                    updateTeamPicture, getFactionOnly, getFaction, getClub, getClubOnly, getFutureTournaments,
-                   checkTournaments, getCities, updateThings, resetUserInfo, userLogin, userSignup)
+                   checkTournaments, getCities, updateThings, resetUserInfo, userLogin, userSignup, resetUser)
 
 
 info = Info(title="Ibericon API", version="1.0.0")
@@ -349,6 +349,16 @@ def webhook():
         return 'Updated PythonAnywhere successfully', 200
     else:
         return 'Wrong event type', 400
+@app.route("/reset-user/<mail>", methods={"GET", "POST"})
+@login_required
+@decorators.only_admin
+def resetUserEndPoint(mail):
+    response = resetUser(mail)
+    if response == 200:
+        flash("OK", 'info')
+    else:
+        flash("No OK", "error")
+    return redirect(url_for('dashboard'))
 
 # Tournaments
 @app.route("/tournaments", methods={"GET", "POST"})
