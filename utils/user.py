@@ -3,6 +3,7 @@ import statistics
 import requests
 import json
 import base64
+import operator
 from statistics import mode
 from flask import current_app
 from sqlalchemy import desc
@@ -45,8 +46,14 @@ def getUserConference(cn):
 
 
 def getUserMostPlayedFaction(usr):
-    fct = usr.factions
-    return mode(fct) if fct else None
+    mostUsed = 0
+    for fct in usr.factions:
+        count = 0
+        for usT in UserTournament.query.filter_by(factionId=fct.id).filter_by(userId=usr.id).all():
+            count += usT.won + usT.tied + usT.lost
+        mostUsed = fct.id if count > mostUsed else mostUsed
+    fct = Faction.query.filter_by(id=mostUsed).first()
+    return fct if fct else None
 
 
 def getUserMostPlayedClub(usr):
@@ -55,14 +62,11 @@ def getUserMostPlayedClub(usr):
 
 
 def getUserLastFaction(usr):
-    usT = UserTournament.query.filter_by(userId=usr.id).all()
-    try:
-        mcf = mode([f.factionId for f in usT if f.factionId])
-    except statistics.StatisticsError:
-        mcf = None
-    if mcf:
-        return Faction.query.filter_by(id=mcf).first()
-    return None
+    usT = usr.tournaments
+    usT.sort(key=operator.attrgetter('date'))
+    usFct = UserTournament.query.filter_by(userId=usr.id).filter_by(tournamentId=usT[-1].id).first()
+    fct = Faction.query.filter_by(id=usFct.factionId).first()
+    return fct if fct else None
 
 
 def getUserFactions(usr):
