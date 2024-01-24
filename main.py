@@ -392,16 +392,22 @@ def tournamentsEndPoint():
         torE=[tor for tor in tors if tor['conference'] == 'Este'],
         torC=[tor for tor in tors if tor['conference'] == 'Centro'],
         torS=[tor for tor in tors if tor['conference'] == 'Sur'],
-        past=past
+        past=past,
+        future=tors
     )
 
 if __name__ == '__main__':
     app.run(host=app.config['HOST'], port=app.config['PORT'], debug=app.config['DEBUG'])
 
 # TODO
+#  Meter el porcentaje alrededor del icono
+#  Meter el valor objetivo y hacer un porcentaje
+#  Mirar algo para saber que hay más páginas (esferitas)
+
 
 # TODO Futuro
 #  mysql
 #  detalles de torneos
 #  buy me a coffee
 #  seccion about
+#  sponsor.

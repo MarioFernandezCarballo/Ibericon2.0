@@ -966,7 +966,8 @@ tr:hover{
 .r-s,
 .r-n,
 .r-ne,
-.r-e{
+.r-e,
+.f-t{
     display: none;
     height: 100%;
     transition: opacity 2s linear;

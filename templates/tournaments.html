@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
 	<div class="row row-map grow-down">
-		<div class="col-md-6 align-self-stretch">
+		<div class="col-md-6 align-self-stretch" id="past">
 			<div class="box-view box-paginated" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
-				<p class="title-box">Torneos realizados</p>
+                <p class="title-box title-selector"><a onclick="back('past')" class="page-link"><</a>Torneos realizados<a onclick="forward('past')" class="page-link">></a></p>
 				<table class="fl-table">
 					<thead>
 						<tr>
@@ -18,6 +18,27 @@
 				<!-- Pagination Controls -->
 				<nav aria-label="Page navigation" class="pagination-nav">
 					<ul class="pagination" id="tournamentPagination">
+					</ul>
+				</nav>
+			</div>
+		</div>
+        <div class="col-md-6 align-self-stretch f-t" id="future">
+			<div class="box-view box-paginated" style="background-image: url(../static/stylesheets/img/bg-invent-1.png);">
+                <p class="title-box title-selector"><a onclick="back('future')" class="page-link"><</a>Torneos futuros<a onclick="forward('future')" class="page-link">></a></p>
+				<table class="fl-table">
+					<thead>
+						<tr>
+							<th style="width: 50%;"><small>Nombre</small></th>
+							<th style="width: 30%;"><small>Fecha</small></th>
+							<th style="width: 20%;"><small>Conferencia</small></th>
+						</tr>
+					</thead>
+					<tbody id="tournaments-body-future">
+					<tbody>
+				</table>
+				<!-- Pagination Controls -->
+				<nav aria-label="Page navigation" class="pagination-nav">
+					<ul class="pagination" id="tournamentFuturePagination">
 					</ul>
 				</nav>
 			</div>
@@ -139,6 +160,7 @@
 	<script>
     // Get user data from Flask template
     var tournaments = {{ past | tojson | safe }};
+    var futureTournaments = {{ future | tojson | safe }};
     var tournamentsN = {{ torN | tojson | safe }};
     var tournamentsNE = {{ torNE | tojson | safe }};
     var tournamentsE = {{ torE | tojson | safe }};
@@ -149,6 +171,7 @@
     var itemsPerPage2 = Math.floor(window.innerHeight * 5 / 1400);
     var stringLimiter = Math.floor(window.innerWidth * 25 / 1900);
     var currentTournamentsPage = 1;
+    var currentFutureTournaments = 1;
     var currentTournamentsNPage = 1;
     var currentTournamentsNEPage = 1;
     var currentTournamentsEPage = 1;
@@ -161,6 +184,8 @@
         "Este": "Noreste",
         "Noreste": "Centro",
         "Centro": "Norte",
+        "past": "future",
+        "future": "past",
     };
     function back(reg) {
         var table = document.getElementById(reg)
@@ -174,6 +199,8 @@
         "Noreste": "Este",
         "Centro": "Noreste",
         "Norte": "Centro",
+        "past": "future",
+        "future": "past",
     };
     function forward(reg) {
         var table = document.getElementById(reg)
@@ -289,6 +316,8 @@
     // Initial rendering
     renderTable(0, itemsPerPage, tournaments, 'tournaments-body');
     renderPagination('tournamentPagination', tournaments, 'tournaments-body', currentTournamentsPage, itemsPerPage);
+    renderTable(0, itemsPerPage, futureTournaments, 'tournaments-body-future');
+    renderPagination('tournamentFuturePagination', futureTournaments, 'tournaments-body-future', currentFutureTournaments, itemsPerPage);
     renderTable(0, itemsPerPage2, tournamentsN, 'future-n-body');
     renderPagination('futureNPagination', tournamentsN, 'future-n-body', currentTournamentsNPage, itemsPerPage2);
     renderTable(0, itemsPerPage2, tournamentsNE, 'future-ne-body');

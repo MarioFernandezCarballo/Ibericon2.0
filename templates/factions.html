@@ -14,28 +14,28 @@
                         <div style="margin-top: 15px; flex-wrap: wrap;" class="position-info">
                             <div class="col-md-3 align-self-stretch kt-mr-10">
                                 <div class="box-view position-item">
-                                    <p class="display-6"><i class="icon-bargraph"></i></p>
+                                    <img src="{{ url_for('static', filename='icons/ICONOS_WEB_ICON_NEGRO/ICONOS_WEB_ICON_NEGRO_WINRATE.png') }}">
                                     <p class="h4">{{ '%0.2f'| format(fct.winRate) }}</p>
                                     <p>Winrate</p>
                                 </div>
                             </div>
                             <div class="col-md-3 align-self-stretch kt-mr-10">
                                 <div class="box-view position-item">
-                                    <p class="display-6"><i class="icon-piechart"></i></p>
+                                    <img src="{{ url_for('static', filename='icons/ICONOS_WEB_ICON_NEGRO/ICONOS_WEB_ICON_NEGRO_WINRATE.png') }}">
                                     <p class="h4">{{ '%0.2f'| format(fct.pickRate) }}</p>
                                     <p>Pickrate</p>
                                 </div>
                             </div>
                             <div class="col-md-3 align-self-stretch kt-mr-10">
                                 <div class="box-view position-item">
-                                    <p class="display-6"><i class="icon-profile-male"></i></p>
+                                    <img src="{{ url_for('static', filename='icons/ICONOS_WEB_ICON_NEGRO/ICONOS_WEB_ICON_NEGRO_JUGADORES.png') }}">
                                     <p class="h4">{{ fct.users|length }}</p>
                                     <p>Jugadores</p>
                                 </div>
                             </div>
                             <div class="col-md-3 align-self-stretch kt-mr-10">
                                 <div class="box-view position-item">
-                                    <p class="display-6"><i class="icon-trophy"></i></p>
+                                    <img src="{{ url_for('static', filename='icons/ICONOS_WEB_ICON_NEGRO/ICONOS_WEB_ICON_NEGRO_NUMERO_DE_TORNEOS.png') }}">
                                     <p class="h4">{{ fct.tournaments }}</p>
                                     <p>Torneos</p>
                                 </div>
