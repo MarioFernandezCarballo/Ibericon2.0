@@ -113,7 +113,7 @@ def userEndPoint(us):
         globalClass = getUserGlobalPosition(usr)
         conferenceClass = getUserConferencePosition(usr)
         future = [{"img": t.imgUri, "name": t.name, "id": t.id, "position": t.date, "bcpUri": t.bcpUri} for t in future]
-        past = [{"img": t["tournament"].imgUri, "name": t['tournament'].name, "id": t['tournament'].id, "position": t['userTournament'].position, "bcpUri": t['tournament'].bcpUri} for t in past]
+        past = [{"img": t["tournament"].imgUri, "name": t['tournament'].name, "id": t['tournament'].id, "position": t['userTournament'].position, "score":t['userTournament'].ibericonScore, "bcpUri": t['tournament'].bcpUri} for t in past]
         ratesFactions = [{"name": f.Faction.name, "id": f.Faction.id, "position": "%.2f" % f.UserFaction.winRate, "img": url_for('static', filename="factions/white/" + f.Faction.shortName + ".svg")} for f in ratesFactions]
         return render_template(
             'user.html',
@@ -125,7 +125,7 @@ def userEndPoint(us):
             club=club,
             usr=usr,
             future=future,
-            past=past,
+            past=sorted(past, key=lambda x:x['score'], reverse=True),
             globalClass=globalClass,
             conferenceClass=conferenceClass,
             ratesFactions=ratesFactions,
@@ -186,7 +186,7 @@ def position():
         globalClass = getUserGlobalPosition(usr)
         conferenceClass = getUserConferencePosition(usr)
         future = [{"img": t.imgUri, "name": t.name, "id": t.id, "position": t.date, "bcpUri": t.bcpUri} for t in future]
-        past = [{"img": t["tournament"].imgUri, "name": t['tournament'].name, "id": t['tournament'].id, "position": t['userTournament'].position, "bcpUri": t['tournament'].bcpUri} for t in past]
+        past = [{"img": t["tournament"].imgUri, "name": t['tournament'].name, "id": t['tournament'].id, "position": t['userTournament'].position, "score":t['userTournament'].ibericonScore, "bcpUri": t['tournament'].bcpUri} for t in past]
         ratesFactions = [{"name": f.Faction.name, "id": f.Faction.id, "position": "%.2f" % f.UserFaction.winRate, "img": url_for('static', filename="factions/white/" + f.Faction.shortName + ".svg")} for f in ratesFactions]
         return render_template(
             'position.html',
@@ -198,7 +198,7 @@ def position():
             club=club,
             usr=usr,
             future=future,
-            past=past,
+            past=sorted(past, key=lambda x:x['score'], reverse=True),
             globalClass=globalClass,
             conferenceClass=conferenceClass,
             ratesFactions=ratesFactions,

@@ -58,8 +58,9 @@
             <table class="fl-table">
                 <thead>
                     <tr>
-                        <th><small>Nombre</small></th>
+                        <th style="width: 70%;"><small>Nombre</small></th>
                         <th><small>Posición</small></th>
+                        <th><small>Puntos</small></th>
                     </tr>
                 </thead>
                 <tbody id="past-body">
@@ -158,6 +159,12 @@
                 var positionCell = document.createElement('td');
                 positionCell.textContent = user.position;
                 row.appendChild(positionCell);
+
+                if (className == 'past-body') {
+                    var scoreCell = document.createElement('td');
+                    scoreCell.textContent = user.score.toFixed(2);
+                    row.appendChild(scoreCell);
+                }
 
                 tableBody.appendChild(row);
             }
