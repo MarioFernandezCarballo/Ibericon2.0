@@ -405,6 +405,12 @@ if __name__ == '__main__':
 #  Mirar algo para saber que hay más páginas (esferitas)
 
 
+# TODO
+#  problemas:
+#  torneo de sevilla pilla centro
+#  .
+
+
 # TODO Futuro
 #  mysql
 #  detalles de torneos

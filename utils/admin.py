@@ -83,12 +83,22 @@ def algorithm(user, totalUsers):
     performance = [0, 0, 0]
     playerModifier = 1 + totalUsers / 100
     try:
-        roundModifier = (10 + len(user['total_games'])) / len(user['total_games'])
+        roundModifier = (10 + len(user['games'])) / len(user['games'])
     except ZeroDivisionError:
         roundModifier = 1
+    submarineBlocker = True
+    points = 0
     for game in user['total_games']:
+        if game['gameResult'] == 2:
+            if submarineBlocker:
+                points += 3.1
+            else:
+                points += 3
+        else:
+            submarineBlocker = False
+            if game['gameResult'] == 1:
+                points += 1
         performance[game['gameResult']] += 1
-    points = ((performance[2] * 3) + performance[1])
     finalPoints = points
     return finalPoints * playerModifier * roundModifier
 
