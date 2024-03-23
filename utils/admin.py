@@ -376,7 +376,7 @@ def updateAlgorithm():
                 usrTor.performance = json.dumps(user['total_games'])
                 usrTor.ibericonScore = algorithm(user, totalUsers)
                 current_app.config['database'].session.commit()
-            _ = updateStats()
+            #_ = updateStats()
     return jsonify({
         "status": 200,
         "message": "Ok"
