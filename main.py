@@ -364,6 +364,7 @@ def resetUserEndPoint(mail):
 @app.route("/tournaments", methods={"GET", "POST"})
 def tournamentsEndPoint():
     tournaments = getAllTournaments()
+    sorted_tournaments = sorted(tournaments, key=lambda x: x[0].date, reverse=True)
     tors = [{
         "bcpUri": u.Tournament.bcpUri,
         "name": u.Tournament.name,
@@ -372,7 +373,7 @@ def tournamentsEndPoint():
         "players": len(u.Tournament.users),
         "conference": u.Conference.name,
         "imgUri": u.Tournament.imgUri
-    } for u in tournaments if not u.Tournament.isFinished]
+    } for u in sorted_tournaments if not u.Tournament.isFinished]
     past = [{
         "bcpUri": u.Tournament.bcpUri,
         "name": u.Tournament.name,
@@ -381,7 +382,7 @@ def tournamentsEndPoint():
         "players": len(u.Tournament.users),
         "conference": u.Conference.name,
         "imgUri": u.Tournament.imgUri
-    } for u in tournaments if u.Tournament.isFinished]
+    } for u in sorted_tournaments if u.Tournament.isFinished]
     return render_template(
         'tournaments.html',
         title="Torneos",

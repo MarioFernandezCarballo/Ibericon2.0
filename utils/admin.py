@@ -86,16 +86,11 @@ def algorithm(user, totalUsers):
         roundModifier = (10 + len(user['games'])) / len(user['games'])
     except ZeroDivisionError:
         roundModifier = 1
-    submarineBlocker = True
     points = 0
     for game in user['total_games']:
         if game['gameResult'] == 2:
-            if submarineBlocker:
-                points += 3.1
-            else:
-                points += 3
+            points += 3
         else:
-            submarineBlocker = False
             if game['gameResult'] == 1:
                 points += 1
         performance[game['gameResult']] += 1
@@ -106,7 +101,7 @@ def algorithm(user, totalUsers):
 def newTournament(tor):
     finished = tor['ended']
     if finished:
-        uri = current_app.config["BCP_API_EVENT"].replace("####event####", tor['id'])
+        uri = current_app.config["BCP_API_EVENT_NEW"].replace("####event####", tor['id'])
     else:
         uri = current_app.config["BCP_API_EVENT_NEW"].replace("####event####", tor['id'])
     response = requests.get(uri, headers=current_app.config["BCP_API_HEADERS"])
@@ -135,6 +130,12 @@ def manageTournament(info):
             location = info['formatted'] + ' ' + info['streetNum'] + ' - ' + info['city']
     except KeyError:
         location = city.name
+    try:
+        players = info['totalPlayers'] - info['droppedPlayers']
+    except KeyError:
+        players = info['queryNumPlayers']
+    except:
+        return None
     current_app.config['database'].session.add(Tournament(
         bcpId=info['id'],
         bcpUri="https://www.bestcoastpairings.com/event/" + info['id'],
@@ -146,7 +147,7 @@ def manageTournament(info):
         conference=city.conference_id,
         isTeam=isTeamTournament,
         date=info['eventDate'].split("T")[0],
-        totalPlayers=info['totalPlayers'] - info['droppedPlayers'],
+        totalPlayers=players,
         isFinished=info['ended'],
         rounds=info['numberOfRounds']
     ))
@@ -207,7 +208,7 @@ def addUserFromTournament(usr, tor):
             permissions=0,
             registered=False
         ))
-    current_app.config['database'].session.commit()
+        current_app.config['database'].session.commit()
     return User.query.filter_by(bcpId=usr['userId']).first()
 
 
@@ -219,7 +220,7 @@ def addFactionFromTournament(fct):
                 name=fct['army']['name'].strip(),
                 shortName=fct['army']['name'].replace(" ", "").lower()
             ))
-    current_app.config['database'].session.commit()
+            current_app.config['database'].session.commit()
     return Faction.query.filter_by(bcpId=fct['armyId']).first() if fct['army'] else None
 
 
@@ -251,7 +252,7 @@ def addClubFromTournament(te, tor):
                 profilePic=imgUrl,
                 shortName=te['team']['name'].replace(" ", "").lower()
             ))
-    current_app.config['database'].session.commit()
+        current_app.config['database'].session.commit()
     return Club.query.filter_by(bcpId=te['teamId']).first() if te['team'] else None
 
 
@@ -370,13 +371,18 @@ def updateAlgorithm():
             info = json.loads(response.text)
             totalUsers = len(info['data'])
             for user in info['data']:
-                usr = User.query.filter_by(bcpId=user['userId']).first()
-                usrTor = UserTournament.query.filter_by(userId=usr.id).filter_by(tournamentId=tor.id).first()
-                usrTor.position = user['placing']
-                usrTor.performance = json.dumps(user['total_games'])
-                usrTor.ibericonScore = algorithm(user, totalUsers)
-                current_app.config['database'].session.commit()
-            #_ = updateStats()
+                try:
+                    usr = User.query.filter_by(bcpId=user['userId']).first()
+                    usrTor = UserTournament.query.filter_by(userId=usr.id).filter_by(tournamentId=tor.id).first()
+                    usrTor.position = user['placing']
+                    usrTor.performance = json.dumps(user['total_games'])
+                    usrTor.ibericonScore = algorithm(user, totalUsers)
+                    current_app.config['database'].session.commit()
+                except:
+                    print(tor.name)
+                    print(user)
+            print(tor.name, 'OK')
+    _ = updateStats()
     return jsonify({
         "status": 200,
         "message": "Ok"

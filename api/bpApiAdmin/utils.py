@@ -27,12 +27,16 @@ def newTournamentApi(uri):
         #        "message": "Tournament is not ended",
         #        "data": {}
         #    })
-        if Tournament.query.filter_by(bcpId=info['id']).first():
-            return jsonify({
-                "status": 401,
-                "message": "Tournament already exists",
-                "data": {}
-            })
+        tor = Tournament.query.filter_by(bcpId=info['id']).first()
+        if tor:
+            if not tor.isFinished and info['ended']:
+                _ = deleteTournament(tor)
+            else:
+                return jsonify({
+                    "status": 401,
+                    "message": "Tournament already exists",
+                    "data": {}
+                })
         tor, result = newTournament(info)
         if result == 200:
             return jsonify({
