@@ -211,7 +211,7 @@ def position():
 def factionEndPoint(fact):
     faction = getFactionOnly(fact)
     fct = getFaction(fact)
-    fct = [{"bcpName": u.User.bcpName, "profilePic": u.User.profilePic, "ibericonScore": u.UserFaction.ibericonScore} for u in fct]
+    fct = [{"bcpName": u.User.bcpName, "profilePic": u.User.profilePic, "ibericonScore": u.UserFaction.ibericonScore, "id":u.User.id} for u in fct]
     return render_template(
         'faction.html',
         title=faction.name,
