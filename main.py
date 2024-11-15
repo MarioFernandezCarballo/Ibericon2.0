@@ -32,8 +32,8 @@ createDatabase(app)
 # Generic
 @app.route('/', methods=['GET', 'POST'])
 def dashboard():
-    if current_user.is_anonymous:
-        return redirect(url_for('login'))
+    # if current_user.is_anonymous:
+    #    return redirect(url_for('login'))
     usr = getUsers()
     clb = getClubs()
     tour = getAllTournaments()

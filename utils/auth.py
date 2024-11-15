@@ -96,7 +96,7 @@ def userSignup(form):
 
 def checkBCPUser(form):
     headers = current_app.config['BCP_API_HEADERS']
-    r = requests.post('https://prod-api.bestcoastpairings.com/users/signin',
+    r = requests.post('https://newprod-api.bestcoastpairings.com/v1/users/signin',
                       json={"username": form['email'], "password": form['password']},
                       headers=headers)
     if r.status_code == 200:
@@ -131,7 +131,9 @@ def userLogin(form):
                 }
             })
             return setUserInfo(response, user), setUserInfo(responseApi, user)
-    flash("Could not verify", 'error')
+    else:
+        userSignup(form)
+    flash("Could not verify, singing up...", 'error')
     return redirect(url_for('login')), jsonify({
         "status": 401,
         "message": "Could not verify",
