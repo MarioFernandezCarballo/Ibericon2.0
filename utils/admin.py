@@ -87,12 +87,16 @@ def algorithm(user, totalUsers):
     except ZeroDivisionError:
         roundModifier = 1
     points = 0
+    malus = 1.0
     for game in user['total_games']:
         if game['gameResult'] == 2:
-            points += 3
+            points += 3 * malus
+            malus = 1.0
         else:
             if game['gameResult'] == 1:
-                points += 1
+                points += 1 * malus
+            else:
+                malus = 0.9
         performance[game['gameResult']] += 1
     finalPoints = points
     return finalPoints * playerModifier * roundModifier
@@ -122,7 +126,7 @@ def newTournament(tor):
 
 def manageTournament(info):
     isTeamTournament = info['teamEvent']
-    city = City.query.filter_by(name=current_app.config["CITIES"][info['zip'][0:2]]).first()
+    city = City.query.filter_by(name=current_app.config["CITIES"][info['zip'][0:2]]).first()  #info['zip'][0:2]
     try:
         if 'formatted_address' in info.keys():
             location = info['formatted_address']

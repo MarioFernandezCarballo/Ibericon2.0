@@ -32,7 +32,7 @@
     {% if user %}
         <a href="/logout" id="log-out">{{ user.bcpName }} (Salir)</a>
     {% else %}
-        <a href="/login" id="log-in">Entrar</a>
+        <a href="{{ url_for('static', filename='doc/BASES_2025.pdf') }}" target="_blank" id="log-in">Bases</a>
     {% endif %}
 </header>
 <button id="openHeder" onclick="toggleMenu()">
