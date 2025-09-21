@@ -408,8 +408,7 @@ if __name__ == '__main__':
 
 # TODO
 #  problemas:
-#  torneo de sevilla pilla centro
-#  .
+#  Logos, necesito los ultimos
 
 
 # TODO Futuro
