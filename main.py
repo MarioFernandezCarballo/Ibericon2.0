@@ -360,6 +360,32 @@ def resetUserEndPoint(mail):
         flash("No OK", "error")
     return redirect(url_for('dashboard'))
 
+# Sponsors
+@app.route("/sponsors", methods={"GET"})
+def sponsorsEndPoint():
+    # Lista de sponsors con sus datos
+    # Puedes actualizar esta lista con los sponsors reales
+    # Las imágenes deben estar en la carpeta static/sponsors/
+    sponsors = [
+        #{
+        #    "id": 1,
+        #    "name": "Games Workshop",
+        #    "logo": "https://via.placeholder.com/300x200/FF0000/FFFFFF?text=Games+Workshop",
+        #    "url": "https://www.games-workshop.com"
+        #}
+    ]
+    
+    # Si tienes imágenes locales, puedes usar:
+    # "logo": url_for('static', filename='sponsors/nombre_imagen.png')
+    
+    return render_template(
+        'sponsors.html',
+        title="Sponsors",
+        subtitle="Nuestros Sponsors",
+        sponsors=sponsors,
+        user=current_user if not current_user.is_anonymous else None
+    )
+
 # Tournaments
 @app.route("/tournaments", methods={"GET", "POST"})
 def tournamentsEndPoint():

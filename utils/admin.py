@@ -6,6 +6,7 @@ from json.decoder import JSONDecodeError
 import base64
 from sqlalchemy import desc
 from database import *
+from utils.user import updateUserRegionByMostPlayedTournaments
 
 
 def checkTournaments():
@@ -190,6 +191,9 @@ def manageUsers(tor, users):
                 usr.clubs.append(cl)
             usrTor.clubId = cl.id
         current_app.config['database'].session.commit()
+        
+        # Actualizar la región del usuario basándose en donde más torneos ha jugado
+        updateUserRegionByMostPlayedTournaments(usr.id)
 
 
 def addUserFromTournament(usr, tor):
@@ -274,6 +278,12 @@ def addTeamFromTournament(te, tor):
 
 
 def updateStats():
+    # Actualizar regiones de todos los usuarios antes de actualizar estadísticas
+    print("Actualizando regiones de usuarios basándose en torneos jugados...")
+    from utils.user import updateAllUsersRegions
+    updated_users = updateAllUsersRegions()
+    print(f"Se actualizaron las regiones de {updated_users} usuarios")
+    
     for usr in User.query.all():
         # User Faction Rates
         for fct in usr.factions:
