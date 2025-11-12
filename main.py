@@ -4,6 +4,7 @@ from flask import redirect, url_for, render_template, request, make_response, fl
 from flask_openapi3 import Info
 from flask_openapi3 import OpenAPI
 from flask_login import login_required, current_user
+from flask_cors import CORS
 
 import api
 from utils import (getUsers, getClubs, getAllTournaments, getUsersWinRate, getFactions, getUserConferencePosition,
@@ -25,6 +26,23 @@ app.register_api(api.clubApiBP)
 app.register_api(api.factionApiBP)
 app.register_api(api.teamApiBP)
 app.register_api(api.tournamentApiBP)
+
+# Configure CORS only for /api/* endpoints
+CORS(app, resources={
+    r"/api/*": {
+        "origins": [
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "http://localhost:5174",
+            "http://localhost:8080",
+            "https://*.vercel.app",
+            "https://vercel.app"
+        ],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "supports_credentials": True
+    }
+})
 
 app = createApp(app)
 createDatabase(app)
