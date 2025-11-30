@@ -12,6 +12,8 @@ def getFactions(query):
         "data": [{
             "id": faction.bcpId,
             "name": faction.name,
+            "winRate": faction.winRate,
+            "pickRate": faction.pickRate,
             "users": [{
                 "id": user.bcpId,
                 "name": user.bcpName,
@@ -37,6 +39,8 @@ def getFaction(query):
         "data": {
             "id": faction.bcpId,
             "name": faction.name,
+            "winRate": faction.winRate,
+            "pickRate": faction.pickRate,
             "users": [{
                 "id": user.bcpId,
                 "name": user.bcpName,
