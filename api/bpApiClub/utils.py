@@ -22,6 +22,7 @@ def getClubs(query):
             "message": "Ok",
             "data": [{
                 "id": cl.bcpId,
+                "profilePic": cl.profilePic,
                 "name": cl.name,
                 "conference": cl.conference,
                 "score": cl.ibericonScore
@@ -36,13 +37,14 @@ def getClub(query):
         "data": {
             "id": result.bcpId,
             "name": result.name,
+            "profilePic": result.profilePic,
             "conference": result.conference,
             "score": result.ibericonScore,
             "users": [{
                 "id": us.bcpId,
                 "name": us.bcpName,
                 "score": UserClub.query.filter_by(userId=us.id).filter_by(clubId=result.id).first().ibericonScore,
-                "profilePid": us.profilePic,
+                "profilePic": us.profilePic,
                 "isClassified": us.isClassified
             } for us in result.users],
             "tournaments": [{
