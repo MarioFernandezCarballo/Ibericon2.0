@@ -21,6 +21,7 @@ def createApp(app):
     app.config["SESSION_COOKIE_SECURE"] = True  # Requiere HTTPS
     app.config["SESSION_COOKIE_HTTPONLY"] = True  # Previene acceso desde JavaScript
     app.config["SESSION_COOKIE_SAMESITE"] = "None"  # Permite cross-domain
+    app.config["SESSION_COOKIE_CSRF_PROTECT"] = False  # Desactiva CSRF protection si usas SameSite=None
 
     # Configuración de cookies JWT (Flask-JWT-Extended)
     app.config["JWT_SECRET_KEY"] = handleSecretKey(config)
