@@ -36,6 +36,8 @@ CORS(app, resources={
             "http://localhost:5174",
             "http://localhost:8080",
             "https://ibericon-web.vercel.app",
+            "https://ibericon.com",
+            "https://www.ibericon.com",
             "https://vercel.app"
         ],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
